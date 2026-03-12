@@ -38,6 +38,7 @@ dependencies:
   adaptive_theme: ^3.7.2
   easy_localization: ^3.0.8
   google_mobile_ads: ^7.0.0
+  webview_flutter: ^4.13.1
 
 dev_dependencies:
   flutter_test:

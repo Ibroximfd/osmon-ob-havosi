@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../blocs/settings_cubit/settings_cubit.dart';
 
@@ -79,9 +80,7 @@ class SettingsPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFF818CF8,
-                                    ).withAlpha(25),
+                                    color: const Color(0xFF818CF8).withAlpha(25),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
@@ -104,10 +103,9 @@ class SettingsPage extends StatelessWidget {
                                     Text(
                                       currentMode == AdaptiveThemeMode.dark
                                           ? 'Tungi rejim'
-                                          : currentMode ==
-                                                AdaptiveThemeMode.light
-                                          ? 'Kunduz rejim'
-                                          : 'Tizim (avtomatik)',
+                                          : currentMode == AdaptiveThemeMode.light
+                                              ? 'Kunduz rejim'
+                                              : 'Tizim (avtomatik)',
                                       style: const TextStyle(
                                         color: Colors.grey,
                                         fontSize: 12,
@@ -118,7 +116,6 @@ class SettingsPage extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 14),
-                            // 3-way theme selector
                             Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
@@ -132,24 +129,21 @@ class SettingsPage extends StatelessWidget {
                                   _ThemeBtn(
                                     icon: LucideIcons.sun,
                                     label: 'Kunduz',
-                                    isActive:
-                                        currentMode == AdaptiveThemeMode.light,
+                                    isActive: currentMode == AdaptiveThemeMode.light,
                                     onTap: () => adaptiveTheme.setLight(),
                                     isDark: isDark,
                                   ),
                                   _ThemeBtn(
                                     icon: LucideIcons.monitor,
                                     label: 'Tizim',
-                                    isActive:
-                                        currentMode == AdaptiveThemeMode.system,
+                                    isActive: currentMode == AdaptiveThemeMode.system,
                                     onTap: () => adaptiveTheme.setSystem(),
                                     isDark: isDark,
                                   ),
                                   _ThemeBtn(
                                     icon: LucideIcons.moon,
                                     label: 'Tungi',
-                                    isActive:
-                                        currentMode == AdaptiveThemeMode.dark,
+                                    isActive: currentMode == AdaptiveThemeMode.dark,
                                     onTap: () => adaptiveTheme.setDark(),
                                     isDark: isDark,
                                   ),
@@ -221,9 +215,7 @@ class SettingsPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFF29B6F6,
-                                    ).withAlpha(20),
+                                    color: const Color(0xFF29B6F6).withAlpha(20),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
@@ -259,8 +251,7 @@ class SettingsPage extends StatelessWidget {
                               spacing: 8,
                               runSpacing: 8,
                               children: _allCities.map((city) {
-                                final isSelected =
-                                    city == settings.selectedCity;
+                                final isSelected = city == settings.selectedCity;
                                 return GestureDetector(
                                   onTap: () => cubit.setSelectedCity(city),
                                   child: AnimatedContainer(
@@ -273,15 +264,15 @@ class SettingsPage extends StatelessWidget {
                                       color: isSelected
                                           ? const Color(0xFF29B6F6)
                                           : (isDark
-                                                ? Colors.white.withAlpha(15)
-                                                : Colors.black.withAlpha(8)),
+                                              ? Colors.white.withAlpha(15)
+                                              : Colors.black.withAlpha(8)),
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
                                         color: isSelected
                                             ? const Color(0xFF29B6F6)
                                             : (isDark
-                                                  ? Colors.white12
-                                                  : Colors.black12),
+                                                ? Colors.white12
+                                                : Colors.black12),
                                       ),
                                     ),
                                     child: Text(
@@ -290,8 +281,8 @@ class SettingsPage extends StatelessWidget {
                                         color: isSelected
                                             ? Colors.white
                                             : (isDark
-                                                  ? Colors.white70
-                                                  : Colors.black87),
+                                                ? Colors.white70
+                                                : Colors.black87),
                                         fontSize: 12,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
@@ -304,6 +295,24 @@ class SettingsPage extends StatelessWidget {
                             ),
                           ],
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ── Legal ─────────────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: _Section(
+                    label: 'HUQUQIY',
+                    isDark: isDark,
+                    children: [
+                      _LinkTile(
+                        icon: LucideIcons.shieldCheck,
+                        iconColor: const Color(0xFF29B6F6),
+                        title: 'Maxfiylik siyosati',
+                        subtitle: 'Privacy Policy',
+                        isDark: isDark,
+                        url: 'https://ibroximfd.github.io/osmon-legal/',
                       ),
                     ],
                   ),
@@ -387,6 +396,129 @@ class SettingsPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// ─── Legal WebView Page ───────────────────────────────────────────────────────
+
+class _WebViewPage extends StatefulWidget {
+  final String title;
+  final String url;
+
+  const _WebViewPage({required this.title, required this.url});
+
+  @override
+  State<_WebViewPage> createState() => _WebViewPageState();
+}
+
+class _WebViewPageState extends State<_WebViewPage> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) => setState(() => _isLoading = false),
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF29B6F6),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Link Tile ────────────────────────────────────────────────────────────────
+
+class _LinkTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final bool isDark;
+  final String url;
+
+  const _LinkTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.isDark,
+    required this.url,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => _WebViewPage(title: title, url: url),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: iconColor.withAlpha(25),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 18,
+              color: isDark ? Colors.white38 : Colors.black38,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -626,7 +758,9 @@ class _SegmentControl extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withAlpha(15) : Colors.black.withAlpha(8),
+        color: isDark
+            ? Colors.white.withAlpha(15)
+            : Colors.black.withAlpha(8),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
