@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -131,6 +132,30 @@ class _AIPhotoPageState extends State<AIPhotoPage>
         ),
       ),
     );
+  }
+
+  Future<void> _saveImage() async {
+    if (_resultBytes == null) return;
+    try {
+      await Gal.putImageBytes(_resultBytes!);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Rasm galereyaga saqlandi!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Rasmni saqlab bo\'lmadi!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _analyzeImage() async {
@@ -653,6 +678,21 @@ class _AIPhotoPageState extends State<AIPhotoPage>
                           style: TextStyle(
                             color: Colors.green.shade600,
                             fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _saveImage,
+                            icon: const Icon(LucideIcons.download, size: 18),
+                            label: const Text('Galereyaga saqlash'),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
                           ),
                         ),
                       ],
