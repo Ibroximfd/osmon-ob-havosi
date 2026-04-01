@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../core/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../../core/routes/app_routes.dart';
 
 class OnboardingStep {
   final String title;
@@ -114,6 +117,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
   ];
 
   void _handleNext() async {
+    if (_step == 1) {
+      try {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+      } catch (e) {
+        // Ignore errors if location services are disabled or denied forever
+      }
+    }
+
+    if (_step == 2) {
+      try {
+        await Permission.notification.request();
+      } catch (e) {
+        // Ignore errors if notification permission is not available
+      }
+    }
+
     if (_step < _steps.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../domain/entities/city.dart';
@@ -19,9 +21,44 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Fetch default Toshkent weather on start if not already loaded
     if (context.read<HomeBloc>().state is HomeInitial) {
-      context.read<HomeBloc>().add(LoadWeatherEvent(City.cities[0]));
+      _loadInitialWeather();
+    }
+  }
+
+  Future<void> _loadInitialWeather() async {
+    final bloc = context.read<HomeBloc>();
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        bloc.add(LoadWeatherEvent(City.cities[0]));
+        return;
+      }
+      
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        bloc.add(LoadWeatherEvent(City.cities[0]));
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+
+      String cityName = "Sizning joylashuvingiz";
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+        if (placemarks.isNotEmpty) {
+          cityName = placemarks.first.locality ?? placemarks.first.subAdministrativeArea ?? placemarks.first.administrativeArea ?? cityName;
+        }
+      } catch (e) {
+        // Ignored, use default text
+      }
+
+      final currentCity = City(name: cityName, lat: position.latitude, lon: position.longitude);
+      bloc.add(LoadWeatherEvent(currentCity));
+    } catch (e) {
+      bloc.add(LoadWeatherEvent(City.cities[0]));
     }
   }
 

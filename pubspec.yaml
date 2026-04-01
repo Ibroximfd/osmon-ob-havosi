@@ -3,7 +3,7 @@ description: "Osmon - O'zbekiston ob-havo ilovasi"
 
 publish_to: 'none' 
 
-version: 1.0.1+2
+version: 1.0.1+4
 
 environment:
   sdk: ^3.10.8
@@ -40,6 +40,9 @@ dependencies:
   google_mobile_ads: ^7.0.0
   webview_flutter: ^4.13.1
   gal: ^2.3.2
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
