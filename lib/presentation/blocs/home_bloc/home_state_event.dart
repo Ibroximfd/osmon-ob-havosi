@@ -18,16 +18,40 @@ class HomeLoaded extends HomeState {
   final String advice;
   final String agricultureAdvice;
   final City currentCity;
+  final bool isAdviceLoading;
 
   const HomeLoaded({
     required this.weather,
     required this.advice,
     required this.agricultureAdvice,
     required this.currentCity,
+    this.isAdviceLoading = false,
   });
 
+  HomeLoaded copyWith({
+    Weather? weather,
+    String? advice,
+    String? agricultureAdvice,
+    City? currentCity,
+    bool? isAdviceLoading,
+  }) {
+    return HomeLoaded(
+      weather: weather ?? this.weather,
+      advice: advice ?? this.advice,
+      agricultureAdvice: agricultureAdvice ?? this.agricultureAdvice,
+      currentCity: currentCity ?? this.currentCity,
+      isAdviceLoading: isAdviceLoading ?? this.isAdviceLoading,
+    );
+  }
+
   @override
-  List<Object> get props => [weather, advice, agricultureAdvice, currentCity];
+  List<Object> get props => [
+        weather,
+        advice,
+        agricultureAdvice,
+        currentCity,
+        isAdviceLoading,
+      ];
 }
 
 class HomeError extends HomeState {

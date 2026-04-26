@@ -10,6 +10,7 @@ import '../../presentation/pages/alerts/alerts_page.dart';
 import '../../presentation/pages/settings/settings_page.dart';
 import '../../presentation/pages/agriculture/agriculture_page.dart';
 import '../../presentation/pages/ai_photo/ai_photo_page.dart';
+import '../../presentation/pages/chat/chat_page.dart';
 import '../../presentation/pages/main_layout.dart';
 import '../../presentation/pages/onboarding/onboarding_page.dart';
 
@@ -47,6 +48,11 @@ class AppRouter {
           path: AppRoutes.search,
           parentNavigatorKey: _rootNavigatorKey,
           builder: (context, state) => const SearchPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.chat,
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state) => const ChatPage(),
         ),
         ShellRoute(
           navigatorKey: _shellNavigatorKey,

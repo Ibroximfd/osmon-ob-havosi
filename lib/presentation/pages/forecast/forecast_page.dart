@@ -28,7 +28,7 @@ class ForecastPage extends StatelessWidget {
     if (code >= 45 && code <= 48) return 'Tuman';
     if (code >= 51 && code <= 67) return 'Yomig\'ir';
     if (code >= 71 && code <= 77) return 'Qor';
-    if (code >= 80 && code <= 82) return 'Jala';
+    if (code >= 80 && code <= 82) return 'Kuchli yomg\'ir';
     if (code >= 95 && code <= 99) return 'Momaqaldiroq';
     return 'Noma\'lum';
   }

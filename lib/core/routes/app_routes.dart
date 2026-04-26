@@ -9,4 +9,5 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String agriculture = '/agriculture';
   static const String aiPhoto = '/ai-photo';
+  static const String chat = '/chat';
 }

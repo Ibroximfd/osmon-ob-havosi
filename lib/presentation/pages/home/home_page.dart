@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 import '../../../core/routes/app_routes.dart';
+import '../../../core/utils/update_checker.dart';
 import '../../../domain/entities/city.dart';
+import '../../../domain/entities/weather.dart';
 import '../../blocs/home_bloc/home_bloc.dart';
 import '../../blocs/home_bloc/home_state_event.dart';
 
@@ -17,49 +19,205 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (context.read<HomeBloc>().state is HomeInitial) {
       _loadInitialWeather();
+    }
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) UpdateChecker.check(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // App sozlamalaridan qaytganda permission tekshiriladi
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      final bloc = context.read<HomeBloc>();
+      if (bloc.state is HomeInitial || bloc.state is HomeError) {
+        _loadInitialWeather();
+      }
     }
   }
 
   Future<void> _loadInitialWeather() async {
+    if (!mounted) return;
     final bloc = context.read<HomeBloc>();
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled()
+          .timeout(const Duration(seconds: 3));
       if (!serviceEnabled) {
-        bloc.add(LoadWeatherEvent(City.cities[0]));
-        return;
-      }
-      
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        bloc.add(LoadWeatherEvent(City.cities[0]));
+        if (mounted) _showLocationServiceDialog();
         return;
       }
 
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-      );
+      LocationPermission permission = await Geolocator.checkPermission()
+          .timeout(const Duration(seconds: 3));
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) _showPermissionDialog(isPermanent: true);
+        return;
+      }
+
+      if (permission == LocationPermission.denied) {
+        if (mounted) _showPermissionDialog(isPermanent: false);
+        return;
+      }
+
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium,
+          timeLimit: const Duration(seconds: 6),
+        );
+      } catch (_) {
+        bloc.add(LoadWeatherEvent(City.cities[0]));
+        return;
+      }
 
       String cityName = "Sizning joylashuvingiz";
       try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        ).timeout(const Duration(seconds: 4));
         if (placemarks.isNotEmpty) {
-          cityName = placemarks.first.locality ?? placemarks.first.subAdministrativeArea ?? placemarks.first.administrativeArea ?? cityName;
+          cityName = placemarks.first.locality ??
+              placemarks.first.subAdministrativeArea ??
+              placemarks.first.administrativeArea ??
+              cityName;
         }
-      } catch (e) {
-        // Ignored, use default text
-      }
+      } catch (_) {}
 
-      final currentCity = City(name: cityName, lat: position.latitude, lon: position.longitude);
+      final currentCity = City(
+        name: cityName,
+        lat: position.latitude,
+        lon: position.longitude,
+      );
       bloc.add(LoadWeatherEvent(currentCity));
-    } catch (e) {
+    } catch (_) {
       bloc.add(LoadWeatherEvent(City.cities[0]));
     }
+  }
+
+  void _showLocationServiceDialog() {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => _locationServiceDialogContent(ctx),
+      );
+    });
+  }
+
+  Widget _locationServiceDialogContent(BuildContext ctx) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Row(
+        children: [
+          Icon(Icons.location_off_rounded, color: Color(0xFF29B6F6)),
+          SizedBox(width: 8),
+          Text('GPS o\'chiq'),
+        ],
+      ),
+      content: const Text(
+        'Aniq ob-havo ma\'lumotlari uchun qurilmangizda joylashuv xizmatini yoqing.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(ctx);
+            context.read<HomeBloc>().add(LoadWeatherEvent(City.cities[0]));
+          },
+          child: const Text('Keyinroq'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF1565C0),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: () async {
+            Navigator.pop(ctx);
+            await Geolocator.openLocationSettings();
+          },
+          child: const Text('Yoqish'),
+        ),
+      ],
+    );
+  }
+
+  void _showPermissionDialog({required bool isPermanent}) {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.location_on_rounded, color: Color(0xFF29B6F6)),
+            SizedBox(width: 8),
+            Text('Joylashuv kerak'),
+          ],
+        ),
+        content: Text(
+          isPermanent
+              ? 'OSMON joylashuvingizni bilmasa aniq ob-havo ko\'rsata olmaydi. Sozlamalarga o\'tib ruxsat bering.'
+              : 'OSMON sizning joylashuvingizga asosan real vaqtdagi ob-havo ma\'lumotlarini ko\'rsatadi. Ruxsat bering.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<HomeBloc>().add(LoadWeatherEvent(City.cities[0]));
+            },
+            child: Text(
+              isPermanent ? 'Toshkent bilan davom' : 'Keyinroq',
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1565C0),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              if (isPermanent) {
+                await Geolocator.openAppSettings();
+              } else {
+                _loadInitialWeather();
+              }
+            },
+            child: Text(isPermanent ? 'Sozlamalarga o\'tish' : 'Ruxsat berish'),
+          ),
+        ],
+      ),
+      );
+    });
   }
 
   IconData _getIcon(int code, bool isDay) {
@@ -167,7 +325,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               child: SafeArea(
-                child: SingleChildScrollView(
+                child: RefreshIndicator(
+                  color: const Color(0xFF29B6F6),
+                  onRefresh: () => _loadInitialWeather(),
+                  child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 120),
                   child: Column(
                     children: [
@@ -210,14 +372,30 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            IconButton(
-                              icon: const Icon(LucideIcons.search),
-                              onPressed: () => context.push(AppRoutes.search),
-                              style: IconButton.styleFrom(
-                                backgroundColor: isDark
-                                    ? Colors.black26
-                                    : Colors.white24,
-                              ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(LucideIcons.sparkles),
+                                  onPressed: () =>
+                                      context.push(AppRoutes.chat),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: isDark
+                                        ? Colors.black26
+                                        : Colors.white24,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                IconButton(
+                                  icon: const Icon(LucideIcons.search),
+                                  onPressed: () =>
+                                      context.push(AppRoutes.search),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: isDark
+                                        ? Colors.black26
+                                        : Colors.white24,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -283,7 +461,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              "Hissiyot: ${weather.feelsLike}° • Eng yuqori: ${weather.daily[0].max}° • Eng past: ${weather.daily[0].min}°",
+                              "His qilish: ${weather.feelsLike}° • Max: ${weather.daily[0].max}° • Min: ${weather.daily[0].min}°",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: isDark ? Colors.white54 : Colors.black54,
@@ -301,40 +479,112 @@ class _HomePageState extends State<HomePage> {
                           top: 24,
                         ),
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
-                            color: isDark ? Colors.black26 : Colors.white24,
-                            border: const Border(
-                              left: BorderSide(
-                                color: Color(0xFF29B6F6),
-                                width: 4,
-                              ),
+                            gradient: LinearGradient(
+                              colors: isDark
+                                  ? [
+                                      const Color(0xFF1E3A8A).withAlpha(60),
+                                      const Color(0xFF1565C0).withAlpha(20),
+                                    ]
+                                  : [
+                                      const Color(0xFFE0F2FE),
+                                      const Color(0xFFF0F9FF),
+                                    ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color(0xFF29B6F6).withAlpha(60),
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF29B6F6).withAlpha(30),
+                                blurRadius: 20,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Row(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 2.0, right: 12.0),
-                                child: Icon(
-                                  LucideIcons.sparkles,
-                                  color: Color(0xFF29B6F6),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  state.advice,
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    height: 1.6,
-                                    fontSize: 14,
-                                    color: isDark
-                                        ? Colors.white
-                                        : Colors.black87,
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF29B6F6)
+                                          .withAlpha(40),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: state.isAdviceLoading
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Color(0xFF29B6F6),
+                                            ),
+                                          )
+                                        : const Icon(
+                                            LucideIcons.sparkles,
+                                            color: Color(0xFF29B6F6),
+                                            size: 16,
+                                          ),
                                   ),
-                                ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'AI Yordamchi',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF29B6F6),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  if (state.isAdviceLoading)
+                                    Text(
+                                      'fikrlamoqda...',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                        color: isDark
+                                            ? Colors.white38
+                                            : Colors.black38,
+                                      ),
+                                    ),
+                                ],
                               ),
+                              const SizedBox(height: 12),
+                              state.isAdviceLoading
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _shimmerLine(isDark, 1.0),
+                                        const SizedBox(height: 8),
+                                        _shimmerLine(isDark, 0.95),
+                                        const SizedBox(height: 8),
+                                        _shimmerLine(isDark, 0.85),
+                                        const SizedBox(height: 8),
+                                        _shimmerLine(isDark, 0.7),
+                                        const SizedBox(height: 8),
+                                        _shimmerLine(isDark, 0.5),
+                                      ],
+                                    )
+                                  : Text(
+                                      state.advice,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                        height: 1.7,
+                                        fontSize: 14,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -371,6 +621,26 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
+                      ),
+
+                      // Weather Score
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          top: 16,
+                        ),
+                        child: _buildWeatherScore(weather, isDark),
+                      ),
+
+                      // Clothing Advice
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          top: 16,
+                        ),
+                        child: _buildClothingAdvice(weather, isDark),
                       ),
 
                       // Hourly Forecast
@@ -699,14 +969,24 @@ class _HomePageState extends State<HomePage> {
                                         ],
                                       ),
                                       const SizedBox(height: 12),
-                                      Text(
-                                        state.agricultureAdvice,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.3,
-                                        ),
-                                      ),
+                                      state.isAdviceLoading
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                _shimmerLine(isDark, 1.0),
+                                                const SizedBox(height: 6),
+                                                _shimmerLine(isDark, 0.7),
+                                              ],
+                                            )
+                                          : Text(
+                                              state.agricultureAdvice,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                height: 1.3,
+                                              ),
+                                            ),
                                     ],
                                   ),
                                 ),
@@ -718,6 +998,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+                ),
               ),
             ),
           );
@@ -725,6 +1006,289 @@ class _HomePageState extends State<HomePage> {
 
         return const Scaffold();
       },
+    );
+  }
+
+  Widget _shimmerLine(bool isDark, double widthFactor) {
+    return FractionallySizedBox(
+      widthFactor: widthFactor,
+      child: Container(
+        height: 12,
+        decoration: BoxDecoration(
+          color: isDark ? Colors.white12 : Colors.black.withAlpha(15),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildClothingAdvice(Weather weather, bool isDark) {
+    final t = weather.temp;
+    final c = weather.condition.toLowerCase();
+    final isRain =
+        c.contains('yomg') || c.contains('kuchli') || c.contains('jala');
+    final isSnow = c.contains('qor');
+    final isStorm = c.contains('momaqaldiroq');
+
+    final items = <_ClothingItem>[];
+
+    if (isStorm) {
+      items.addAll([
+        _ClothingItem('⛈️', 'Uyda qoling'),
+        _ClothingItem('📱', 'Favqulodda'),
+      ]);
+    } else {
+      if (t > 35) {
+        items.addAll([
+          _ClothingItem('👕', 'Yengil kiyim'),
+          _ClothingItem('🧢', 'Shapka'),
+          _ClothingItem('🕶️', 'Ko\'zoynak'),
+          _ClothingItem('💧', 'Ko\'p suv iching'),
+        ]);
+      } else if (t > 25) {
+        items.addAll([
+          _ClothingItem('👕', 'Yengil kiyim'),
+          _ClothingItem('🕶️', 'Ko\'zoynak'),
+        ]);
+      } else if (t > 15) {
+        items.addAll([
+          _ClothingItem('👔', 'Oddiy kiyim'),
+          _ClothingItem('🧴', 'Quyosh kremı'),
+        ]);
+      } else if (t > 5) {
+        items.addAll([
+          _ClothingItem('🧥', 'Kurtka'),
+          _ClothingItem('🧣', 'Sharf'),
+        ]);
+      } else {
+        items.addAll([
+          _ClothingItem('🧥', 'Qalin kurtka'),
+          _ClothingItem('🧣', 'Sharf'),
+          _ClothingItem('🧤', 'Qo\'lqop'),
+        ]);
+      }
+      if (isRain) items.add(_ClothingItem('☂️', 'Soyabon oling'));
+      if (isSnow) items.add(_ClothingItem('🥾', 'Issiq etik'));
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withAlpha(8) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? Colors.white12 : Colors.black12,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF29B6F6).withAlpha(20),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('👗', style: TextStyle(fontSize: 16)),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Bugun nima kiyish kerak?',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: items.map((item) {
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withAlpha(12)
+                      : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(item.emoji, style: const TextStyle(fontSize: 16)),
+                    const SizedBox(width: 6),
+                    Text(
+                      item.label,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _calcScore(Weather weather) {
+    int score = 10;
+
+    final t = weather.temp;
+    if (t < 0 || t > 40) {
+      score -= 3;
+    } else if (t < 8 || t > 36) {
+      score -= 2;
+    } else if (t < 15 || t > 30) {
+      score -= 1;
+    }
+
+    if (weather.humidity > 88 || weather.humidity < 18) {
+      score -= 2;
+    } else if (weather.humidity > 72) {
+      score -= 1;
+    }
+
+    if (weather.windSpeed > 40) {
+      score -= 2;
+    } else if (weather.windSpeed > 25) {
+      score -= 1;
+    }
+
+    final c = weather.condition.toLowerCase();
+    if (c.contains('momaqaldiroq')) {
+      score -= 3;
+    } else if (c.contains('kuchli') || c.contains('qor')) {
+      score -= 2;
+    } else if (c.contains('yomg') || c.contains('tuman')) {
+      score -= 1;
+    }
+
+    return score.clamp(1, 10);
+  }
+
+  Widget _buildWeatherScore(Weather weather, bool isDark) {
+    final score = _calcScore(weather);
+
+    final Color color;
+    final String label;
+    final String tip;
+    final IconData icon;
+
+    if (score >= 9) {
+      color = const Color(0xFF22C55E);
+      label = 'Mukammal kun!';
+      tip = 'Tashqarida sayr qilish, sport va dam olish uchun ideal';
+      icon = Icons.sentiment_very_satisfied_rounded;
+    } else if (score >= 7) {
+      color = const Color(0xFF84CC16);
+      label = 'Yaxshi kun';
+      tip = 'Tashqi faoliyat uchun qulay sharoit';
+      icon = Icons.sentiment_satisfied_rounded;
+    } else if (score >= 5) {
+      color = const Color(0xFFF59E0B);
+      label = "O'rtacha kun";
+      tip = 'Ehtiyot bo\'ling, ob-havo o\'zgaruvchan';
+      icon = Icons.sentiment_neutral_rounded;
+    } else if (score >= 3) {
+      color = const Color(0xFFEF4444);
+      label = 'Noqulay havo';
+      tip = 'Zarur bo\'lmasa tashqariga chiqmaslik tavsiya etiladi';
+      icon = Icons.sentiment_dissatisfied_rounded;
+    } else {
+      color = const Color(0xFF9333EA);
+      label = 'Og\'ir ob-havo';
+      tip = 'Uyda qolish va ehtiyot choralarini ko\'rish kerak';
+      icon = Icons.sentiment_very_dissatisfied_rounded;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color.withAlpha(40),
+            color.withAlpha(15),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(60)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withAlpha(30),
+              border: Border.all(color: color, width: 2.5),
+            ),
+            child: Center(
+              child: Text(
+                '$score',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(icon, color: color, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  tip,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.4,
+                    color: isDark ? Colors.white54 : Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$score/10',
+            style: TextStyle(
+              fontSize: 11,
+              color: color.withAlpha(180),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -759,4 +1323,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class _ClothingItem {
+  final String emoji;
+  final String label;
+  const _ClothingItem(this.emoji, this.label);
 }

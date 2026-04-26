@@ -26,13 +26,13 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          debugPrint('\$ad loaded.');
+          debugPrint('$ad loaded.');
           setState(() {
             _isLoaded = true;
           });
         },
         onAdFailedToLoad: (ad, err) {
-          debugPrint('BannerAd failed to load: \$err');
+          debugPrint('BannerAd failed to load: $err');
           ad.dispose();
         },
       ),

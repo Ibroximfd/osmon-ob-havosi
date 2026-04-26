@@ -1,12 +1,14 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/services/favorites_service.dart';
 import '../../data/datasources/gemini_service.dart';
 import '../../data/datasources/weather_remote_data_source.dart';
 import '../../data/datasources/map_data_source.dart';
 import '../../data/repositories/weather_repository_impl.dart';
 import '../../domain/repositories/weather_repository.dart';
 import '../../domain/usecases/get_weather_usecase.dart';
+import '../../presentation/blocs/favorites_cubit/favorites_cubit.dart';
 import '../../presentation/blocs/home_bloc/home_bloc.dart';
 import '../../presentation/blocs/map_bloc/map_bloc.dart';
 import '../../presentation/blocs/settings_cubit/settings_cubit.dart';
@@ -18,6 +20,8 @@ Future<void> init() async {
   // External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => FavoritesService(sharedPreferences));
+  sl.registerFactory(() => FavoritesCubit(sl<FavoritesService>()));
 
   // Network
   sl.registerLazySingleton(() => ApiClient());
