@@ -8,7 +8,7 @@ class ApiConstants {
   static const String airQualityPath = '/air-quality';
   static const String defaultTimezone = 'Asia/Tashkent';
 
-  static const String geminiApiKey = 'AIzaSyDeS-lRnkd0JAaOttb_IrgCQkTh8EUMAi4';
+  static const String geminiApiKey = 'Api Key';
   static const String geminiApiUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 }
