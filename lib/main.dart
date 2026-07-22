@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'ads/ads_initializer.dart';
+import 'ads/app_lifecycle_reactor.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/routes/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
-import 'core/utils/app_open_ad_manager.dart';
-import 'core/utils/app_lifecycle_reactor.dart';
 
 import 'presentation/blocs/favorites_cubit/favorites_cubit.dart';
 import 'presentation/blocs/home_bloc/home_bloc.dart';
@@ -20,14 +19,10 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  MobileAds.instance.initialize();
-
-  // Load App Open Ad
-  AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
-  AppLifecycleReactor appLifecycleReactor = AppLifecycleReactor(
-    appOpenAdManager: appOpenAdManager,
-  );
-  WidgetsBinding.instance.addObserver(appLifecycleReactor);
+  // Fire-and-forget: consent + SDK init + ad preloading must never delay
+  // cold start or block the first frame.
+  AdsInitializer.instance.initialize();
+  WidgetsBinding.instance.addObserver(AppLifecycleReactor());
 
   await di.init();
   await NotificationService.init();

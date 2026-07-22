@@ -1,0 +1,23 @@
+name: lucide_icons
+description: >
+  Vendored/patched fork of lucide_icons 0.257.0 for local use only.
+  Upstream's LucideIconData extends IconData, which Flutter made a
+  `final class` — subclassing it no longer compiles. This fork inlines
+  each icon as a direct `const IconData(...)` instead, keeping the exact
+  same LucideIcons.xxx API used throughout the app.
+version: 0.257.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.10.8
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  fonts:
+    - family: Lucide
+      fonts:
+        - asset: assets/lucide.ttf

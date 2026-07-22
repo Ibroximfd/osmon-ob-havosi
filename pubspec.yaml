@@ -3,7 +3,7 @@ description: "Osmon - O'zbekiston ob-havo ilovasi"
 
 publish_to: 'none' 
 
-version: 1.0.1+5
+version: 1.0.2+6
 
 environment:
   sdk: ^3.10.8
@@ -54,6 +54,13 @@ dev_dependencies:
 
 
   flutter_lints: ^6.0.0
+
+# lucide_icons 0.257.0 (latest on pub.dev) subclasses IconData, which
+# Flutter made a `final class` — breaks compilation on current Flutter/Dart.
+# Pinned to a local patched copy with the same API until upstream fixes it.
+dependency_overrides:
+  lucide_icons:
+    path: packages/lucide_icons
 
 
 flutter:

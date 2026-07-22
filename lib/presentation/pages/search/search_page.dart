@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../ads/interstitial_ad_manager.dart';
 import '../../../domain/entities/city.dart';
 import '../../blocs/home_bloc/home_bloc.dart';
 import '../../blocs/home_bloc/home_state_event.dart';
@@ -45,6 +46,8 @@ class _SearchPageState extends State<SearchPage> {
     context.read<HomeBloc>().add(LoadWeatherEvent(city));
     // Pop back to home
     context.pop();
+    // Natural pause point for an interstitial; frequency-capped internally.
+    InterstitialAdManager.instance.maybeShowOnCitySwitch();
   }
 
   @override

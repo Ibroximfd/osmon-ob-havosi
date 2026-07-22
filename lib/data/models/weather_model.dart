@@ -28,11 +28,16 @@ class WeatherModel extends Weather {
     final hourlyData = json['hourly'];
     final dailyData = json['daily'];
 
+    // API javobidagi vaqt satrlari joylashuvning mahalliy vaqtida (utc_offset_seconds
+    // ga mos) keladi — qurilma tizim vaqt zonasiga bog'liq bo'lmaslik uchun "hozir"ni
+    // ham xuddi shu offset asosida hisoblaymiz.
+    final utcOffsetSeconds = (json['utc_offset_seconds'] as num?)?.toInt() ?? 0;
+    final now = DateTime.now().toUtc().add(Duration(seconds: utcOffsetSeconds));
+
     // --- 24 soatlik prognoz (hozirgi soatdan boshlab) ---
     final hourlyList = <HourlyForecast>[];
     if (hourlyData != null) {
       final times = hourlyData['time'] as List;
-      final now = DateTime.now();
 
       // Hozirgi soatga mos keladigan indeksni topamiz
       int startIndex = 0;
@@ -120,7 +125,7 @@ class WeatherModel extends Weather {
       humidity: (current['relative_humidity_2m'] as num).round(),
       windSpeed: (current['wind_speed_10m'] as num).toDouble(),
       aqi: aqiValue,
-      pressure: (current['surface_pressure'] as num).round(),
+      pressure: (current['pressure_msl'] as num).round(),
       isDay: current['is_day'] == 1,
       hourly: hourlyList,
       daily: dailyList,

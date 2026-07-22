@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../ads/ad_config.dart';
+import '../../../ads/widgets/native_ad_card.dart';
+import '../../../domain/entities/weather.dart';
 import '../../blocs/home_bloc/home_bloc.dart';
 import '../../blocs/home_bloc/home_state_event.dart';
 
@@ -31,6 +34,141 @@ class ForecastPage extends StatelessWidget {
     if (code >= 80 && code <= 82) return 'Kuchli yomg\'ir';
     if (code >= 95 && code <= 99) return 'Momaqaldiroq';
     return 'Noma\'lum';
+  }
+
+  List<Widget> _buildDailyCards(List<DailyForecast> daily, bool isDark) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < daily.length; i++) {
+      final item = daily[i];
+      final hasRain = item.code >= 51 && item.code <= 82;
+      final rainChance = hasRain
+          ? Random().nextInt(60) + 40
+          : 0; // Mocking rain chance since daily open-meteo response doesn't give simple percentage
+
+      widgets.add(
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black26 : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.black12,
+            ),
+            boxShadow: [
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 80,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.day,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(
+                width: 60,
+                child: Column(
+                  children: [
+                    Icon(
+                      _getIcon(item.code, true),
+                      color: const Color(0xFF29B6F6),
+                      size: 28,
+                    ),
+                    if (rainChance > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              LucideIcons.droplets,
+                              size: 10,
+                              color: Color(0xFF29B6F6),
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '$rainChance%',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xFF29B6F6),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              SizedBox(
+                width: 80,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${item.max}°',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${item.min}°',
+                          style: TextStyle(
+                            color: isDark ? Colors.white54 : Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getDesc(item.code),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.white54 : Colors.black54,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final isLast = i == daily.length - 1;
+      if (!isLast && (i + 1) % AdConfig.nativeAdEveryNItems == 0) {
+        widgets.add(
+          NativeAdCard(slotKey: 'forecast_daily_${(i + 1) ~/ AdConfig.nativeAdEveryNItems}'),
+        );
+      }
+    }
+    return widgets;
   }
 
   @override
@@ -76,130 +214,7 @@ class ForecastPage extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // Daily Cards
-                    ...daily.map((item) {
-                      final hasRain = item.code >= 51 && item.code <= 82;
-                      final rainChance = hasRain
-                          ? Random().nextInt(60) + 40
-                          : 0; // Mocking rain chance since daily open-meteo response doesn't give simple percentage
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.black26 : Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: isDark ? Colors.white12 : Colors.black12,
-                          ),
-                          boxShadow: [
-                            if (!isDark)
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: 80,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.day,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(
-                              width: 60,
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    _getIcon(item.code, true),
-                                    color: const Color(0xFF29B6F6),
-                                    size: 28,
-                                  ),
-                                  if (rainChance > 0)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            LucideIcons.droplets,
-                                            size: 10,
-                                            color: Color(0xFF29B6F6),
-                                          ),
-                                          const SizedBox(width: 2),
-                                          Text(
-                                            '$rainChance%',
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              color: Color(0xFF29B6F6),
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(
-                              width: 80,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '${item.max}°',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${item.min}°',
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? Colors.white54
-                                              : Colors.black54,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _getDesc(item.code),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isDark
-                                          ? Colors.white54
-                                          : Colors.black54,
-                                    ),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                    ..._buildDailyCards(daily, isDark),
 
                     // Sun / Moon Info Widget
                     const SizedBox(height: 24),

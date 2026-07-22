@@ -1,7 +1,6 @@
 import '../models/weather_model.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/network/api_client.dart';
-import '../../core/constants/api_constants.dart';
 import 'package:logger/logger.dart';
 
 abstract class WeatherRemoteDataSource {
@@ -26,17 +25,17 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
       'latitude': lat,
       'longitude': lon,
       'current':
-          'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,surface_pressure',
+          'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,pressure_msl',
       'hourly': 'temperature_2m,weather_code',
       'daily': 'weather_code,temperature_2m_max,temperature_2m_min',
-      'timezone': ApiConstants.defaultTimezone,
+      'timezone': 'auto',
     });
 
     final aqiFuture = apiClient.getAirQuality({
       'latitude': lat,
       'longitude': lon,
       'current': 'us_aqi,european_aqi',
-      'timezone': ApiConstants.defaultTimezone,
+      'timezone': 'auto',
     });
 
     try {

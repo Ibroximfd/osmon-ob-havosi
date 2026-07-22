@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../ads/widgets/banner_ad_widget.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget child;

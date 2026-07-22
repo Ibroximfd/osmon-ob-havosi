@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 
+import '../../../ads/ad_config.dart';
+import '../../../ads/widgets/native_ad_card.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/services/location_service.dart';
 import '../../../core/utils/update_checker.dart';
-import '../../../domain/entities/city.dart';
 import '../../../domain/entities/weather.dart';
 import '../../blocs/home_bloc/home_bloc.dart';
 import '../../blocs/home_bloc/home_state_event.dart';
@@ -49,173 +49,42 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
+  // Location ruxsat/servis bo'lmasa ham UI hech qachon bloklanmaydi:
+  // GPS ishlamasa oxirgi ma'lum joylashuv (yoki Toshkent) bilan ob-havo
+  // darhol ko'rsatiladi, va faqat bloklamaydigan SnackBar orqali eslatma beriladi.
   Future<void> _loadInitialWeather() async {
     if (!mounted) return;
     final bloc = context.read<HomeBloc>();
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled()
-          .timeout(const Duration(seconds: 3));
-      if (!serviceEnabled) {
-        if (mounted) _showLocationServiceDialog();
-        return;
-      }
 
-      LocationPermission permission = await Geolocator.checkPermission()
-          .timeout(const Duration(seconds: 3));
+    final city = await LocationService.resolveCurrentCity();
+    if (!mounted) return;
 
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (mounted) _showPermissionDialog(isPermanent: true);
-        return;
-      }
-
-      if (permission == LocationPermission.denied) {
-        if (mounted) _showPermissionDialog(isPermanent: false);
-        return;
-      }
-
-      Position? position;
-      try {
-        position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
-          timeLimit: const Duration(seconds: 6),
-        );
-      } catch (_) {
-        bloc.add(LoadWeatherEvent(City.cities[0]));
-        return;
-      }
-
-      String cityName = "Sizning joylashuvingiz";
-      try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        ).timeout(const Duration(seconds: 4));
-        if (placemarks.isNotEmpty) {
-          cityName = placemarks.first.locality ??
-              placemarks.first.subAdministrativeArea ??
-              placemarks.first.administrativeArea ??
-              cityName;
-        }
-      } catch (_) {}
-
-      final currentCity = City(
-        name: cityName,
-        lat: position.latitude,
-        lon: position.longitude,
-      );
-      bloc.add(LoadWeatherEvent(currentCity));
-    } catch (_) {
-      bloc.add(LoadWeatherEvent(City.cities[0]));
+    if (city != null) {
+      bloc.add(LoadWeatherEvent(city));
+      return;
     }
+
+    final fallbackCity = await LocationService.getFallbackCity();
+    if (!mounted) return;
+    bloc.add(LoadWeatherEvent(fallbackCity));
+    _showLocationHint();
   }
 
-  void _showLocationServiceDialog() {
+  void _showLocationHint() {
     if (!mounted) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => _locationServiceDialogContent(ctx),
-      );
-    });
-  }
-
-  Widget _locationServiceDialogContent(BuildContext ctx) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Row(
-        children: [
-          Icon(Icons.location_off_rounded, color: Color(0xFF29B6F6)),
-          SizedBox(width: 8),
-          Text('GPS o\'chiq'),
-        ],
-      ),
-      content: const Text(
-        'Aniq ob-havo ma\'lumotlari uchun qurilmangizda joylashuv xizmatini yoqing.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(ctx);
-            context.read<HomeBloc>().add(LoadWeatherEvent(City.cities[0]));
-          },
-          child: const Text('Keyinroq'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF1565C0),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 6),
+          content: const Text("Aniqroq ob-havo uchun joylashuvni yoqing"),
+          action: SnackBarAction(
+            label: 'Yoqish',
+            onPressed: () => LocationService.openLocationSettings(),
           ),
-          onPressed: () async {
-            Navigator.pop(ctx);
-            await Geolocator.openLocationSettings();
-          },
-          child: const Text('Yoqish'),
         ),
-      ],
-    );
-  }
-
-  void _showPermissionDialog({required bool isPermanent}) {
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.location_on_rounded, color: Color(0xFF29B6F6)),
-            SizedBox(width: 8),
-            Text('Joylashuv kerak'),
-          ],
-        ),
-        content: Text(
-          isPermanent
-              ? 'OSMON joylashuvingizni bilmasa aniq ob-havo ko\'rsata olmaydi. Sozlamalarga o\'tib ruxsat bering.'
-              : 'OSMON sizning joylashuvingizga asosan real vaqtdagi ob-havo ma\'lumotlarini ko\'rsatadi. Ruxsat bering.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<HomeBloc>().add(LoadWeatherEvent(City.cities[0]));
-            },
-            child: Text(
-              isPermanent ? 'Toshkent bilan davom' : 'Keyinroq',
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1565C0),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              if (isPermanent) {
-                await Geolocator.openAppSettings();
-              } else {
-                _loadInitialWeather();
-              }
-            },
-            child: Text(isPermanent ? 'Sozlamalarga o\'tish' : 'Ruxsat berish'),
-          ),
-        ],
-      ),
       );
     });
   }
@@ -261,11 +130,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   ),
                   Text(state.message),
                   TextButton(
-                    onPressed: () {
-                      context.read<HomeBloc>().add(
-                        LoadWeatherEvent(City.cities[0]),
-                      );
-                    },
+                    onPressed: _loadInitialWeather,
                     child: const Text('Qayta urinish'),
                   ),
                 ],
@@ -659,75 +524,103 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             const SizedBox(height: 16),
                             SizedBox(
                               height: 120,
-                              child: ListView.separated(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: weather.hourly
-                                    .where(
-                                      (e) => weather.hourly.indexOf(e) % 2 == 0,
-                                    )
-                                    .length,
-                                separatorBuilder: (context, _) =>
-                                    const SizedBox(width: 16),
-                                itemBuilder: (context, index) {
+                              child: Builder(
+                                builder: (context) {
                                   final hourlyList = weather.hourly
                                       .where(
                                         (e) =>
                                             weather.hourly.indexOf(e) % 2 == 0,
                                       )
                                       .toList();
-                                  final item = hourlyList[index];
-                                  final isFirst = index == 0;
+                                  const adEvery = AdConfig.nativeAdEveryNItems;
+                                  const groupSize = adEvery + 1;
+                                  final adCount = hourlyList.isEmpty
+                                      ? 0
+                                      : (hourlyList.length - 1) ~/ adEvery;
+                                  final itemCount =
+                                      hourlyList.length + adCount;
 
-                                  return Container(
-                                    width: 70,
+                                  return ListView.separated(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
+                                      horizontal: 24,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: isFirst
-                                          ? const Color(0xFF1565C0)
-                                          : (isDark
-                                                ? Colors.black26
-                                                : Colors.white24),
-                                      borderRadius: BorderRadius.circular(35),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          item.time,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: isFirst
-                                                ? Colors.white
-                                                : (isDark
-                                                      ? Colors.white70
-                                                      : Colors.black87),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: itemCount,
+                                    separatorBuilder: (context, _) =>
+                                        const SizedBox(width: 16),
+                                    itemBuilder: (context, index) {
+                                      final isAdSlot =
+                                          (index + 1) % groupSize == 0;
+                                      if (isAdSlot) {
+                                        return SizedBox(
+                                          width: 140,
+                                          child: NativeAdCard(
+                                            slotKey:
+                                                'home_hourly_${index ~/ groupSize}',
+                                            height: 120,
                                           ),
+                                        );
+                                      }
+
+                                      final realIndex =
+                                          index - (index ~/ groupSize);
+                                      final item = hourlyList[realIndex];
+                                      final isFirst = realIndex == 0;
+
+                                      return Container(
+                                        width: 70,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
                                         ),
-                                        Icon(
-                                          _getIcon(item.code, weather.isDay),
+                                        decoration: BoxDecoration(
                                           color: isFirst
-                                              ? Colors.white
-                                              : const Color(0xFF29B6F6),
-                                        ),
-                                        Text(
-                                          '${item.temp}°',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: isFirst
-                                                ? Colors.white
-                                                : (isDark
-                                                      ? Colors.white
-                                                      : Colors.black),
+                                              ? const Color(0xFF1565C0)
+                                              : (isDark
+                                                    ? Colors.black26
+                                                    : Colors.white24),
+                                          borderRadius: BorderRadius.circular(
+                                            35,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              item.time,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: isFirst
+                                                    ? Colors.white
+                                                    : (isDark
+                                                          ? Colors.white70
+                                                          : Colors.black87),
+                                              ),
+                                            ),
+                                            Icon(
+                                              _getIcon(
+                                                item.code,
+                                                weather.isDay,
+                                              ),
+                                              color: isFirst
+                                                  ? Colors.white
+                                                  : const Color(0xFF29B6F6),
+                                            ),
+                                            Text(
+                                              '${item.temp}°',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: isFirst
+                                                    ? Colors.white
+                                                    : (isDark
+                                                          ? Colors.white
+                                                          : Colors.black),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               ),
