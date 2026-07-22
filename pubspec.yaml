@@ -3,7 +3,7 @@ description: "Osmon - O'zbekiston ob-havo ilovasi"
 
 publish_to: 'none' 
 
-version: 1.0.2+6
+
 
 environment:
   sdk: ^3.10.8
