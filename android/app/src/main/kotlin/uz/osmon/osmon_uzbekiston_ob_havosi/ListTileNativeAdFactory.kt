@@ -33,6 +33,10 @@ class ListTileNativeAdFactory(private val inflater: LayoutInflater) :
         val iconView = adView.findViewById<ImageView>(R.id.ad_icon)
         val ctaView = adView.findViewById<Button>(R.id.ad_cta)
         val starsView = adView.findViewById<RatingBar>(R.id.ad_stars)
+        val badgeView = adView.findViewById<TextView>(R.id.ad_badge)
+
+        // AdMob requires a visible, localized attribution badge.
+        (customOptions?.get("adLabel") as? String)?.let { badgeView.text = it }
 
         headlineView.text = nativeAd.headline
         adView.headlineView = headlineView

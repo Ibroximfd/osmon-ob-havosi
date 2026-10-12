@@ -7,8 +7,7 @@ class AdConfig {
 
   // ─────────────────────────────────────────────────────────────────
   // RELEASE CHECKLIST: set this to false before every release build.
-  // Shipping with testMode=true serves no ads (no revenue); shipping
-  // debug/test IDs with testMode=false risks an AdMob account suspension.
+  // Shipping with testMode=true serves only test ads (no revenue).
   // ─────────────────────────────────────────────────────────────────
   static const bool testMode = false;
 
@@ -16,60 +15,69 @@ class AdConfig {
   /// platform-side NativeAdFactory registered in MainActivity.kt / AppDelegate.swift.
   static const String nativeAdFactoryId = 'listTile';
 
-  // ── App Open ───────────────────────────────────────────────────
-  static String get appOpenAdUnitId {
-    if (testMode) {
-      return Platform.isIOS
-          ? 'ca-app-pub-3940256099942544/5575463023'
-          : 'ca-app-pub-3940256099942544/9257395921';
-    }
-    // ca-app-pub-9217530480544704 / "full"
-    return 'ca-app-pub-9217530480544704/5347366148';
+  /// Prefix of Google's public sample ad units.
+  static const String _samplePublisher = 'ca-app-pub-3940256099942544';
+
+  // ── Production units ────────────────────────────────────────────
+  // AdMob account pub-2122406741205447, app "Ob havo uz" (Android,
+  // ca-app-pub-2122406741205447~2535659455 — must match AndroidManifest).
+  // Units must be "standard" serving type: partner-bidding units only serve
+  // through third-party mediation and never fill direct SDK requests.
+  // An empty string means "no unit created yet": that format stays off in
+  // release builds instead of serving Google's sample ads to real users.
+  static const String _appOpenAndroid =
+      'ca-app-pub-2122406741205447/1483805692';
+  static const String _bannerAndroid = 'ca-app-pub-2122406741205447/7857642355';
+  static const String _interstitialAndroid =
+      'ca-app-pub-2122406741205447/6544560687';
+  static const String _nativeAndroid = 'ca-app-pub-2122406741205447/6359807984';
+  static const String _appOpenIos = '';
+  static const String _bannerIos = '';
+  static const String _interstitialIos = '';
+  static const String _nativeIos = '';
+
+  static String get appOpenAdUnitId => _pick(
+    android: _appOpenAndroid,
+    ios: _appOpenIos,
+    testAndroid: '$_samplePublisher/9257395921',
+    testIos: '$_samplePublisher/5575463023',
+  );
+
+  static String get bannerAdUnitId => _pick(
+    android: _bannerAndroid,
+    ios: _bannerIos,
+    testAndroid: '$_samplePublisher/9214589741',
+    testIos: '$_samplePublisher/2435281174',
+  );
+
+  static String get interstitialAdUnitId => _pick(
+    android: _interstitialAndroid,
+    ios: _interstitialIos,
+    testAndroid: '$_samplePublisher/1033173712',
+    testIos: '$_samplePublisher/4411468910',
+  );
+
+  static String get nativeAdUnitId => _pick(
+    android: _nativeAndroid,
+    ios: _nativeIos,
+    testAndroid: '$_samplePublisher/2247696110',
+    testIos: '$_samplePublisher/3986624511',
+  );
+
+  static String _pick({
+    required String android,
+    required String ios,
+    required String testAndroid,
+    required String testIos,
+  }) {
+    if (testMode) return Platform.isIOS ? testIos : testAndroid;
+    return Platform.isIOS ? ios : android;
   }
 
-  // ── Banner ─────────────────────────────────────────────────────
-  static String get bannerAdUnitId {
-    if (testMode) {
-      return Platform.isIOS
-          ? 'ca-app-pub-3940256099942544/2934735716'
-          : 'ca-app-pub-3940256099942544/6300978111';
-    }
-    // ca-app-pub-9217530480544704 / "har doim"
-    return 'ca-app-pub-9217530480544704/7074692424';
-  }
-
-  // ── Interstitial ───────────────────────────────────────────────
-  // NOTE: no production ad unit exists yet — the doc's "Interstitial" unit
-  // has "Partner bidding" enabled and can't be used with a plain AdMob
-  // request. Create a NEW non-bidding Interstitial unit in AdMob console
-  // and replace the string below before release.
-  static String get interstitialAdUnitId {
-    if (testMode) {
-      return Platform.isIOS
-          ? 'ca-app-pub-3940256099942544/4411468910'
-          : 'ca-app-pub-3940256099942544/1033173712';
-    }
-    // TODO: replace with the real non-bidding Interstitial ad unit ID.
-    return Platform.isIOS
-        ? 'ca-app-pub-3940256099942544/4411468910'
-        : 'ca-app-pub-3940256099942544/1033173712';
-  }
-
-  // ── Native Advanced ────────────────────────────────────────────
-  // NOTE: same as Interstitial — the doc's "Native advanced" unit has
-  // "Partner bidding" enabled. Create a NEW non-bidding Native Advanced
-  // unit in AdMob console and replace the string below before release.
-  static String get nativeAdUnitId {
-    if (testMode) {
-      return Platform.isIOS
-          ? 'ca-app-pub-3940256099942544/3986624511'
-          : 'ca-app-pub-3940256099942544/2247696110';
-    }
-    // TODO: replace with the real non-bidding Native Advanced ad unit ID.
-    return Platform.isIOS
-        ? 'ca-app-pub-3940256099942544/3986624511'
-        : 'ca-app-pub-3940256099942544/2247696110';
-  }
+  /// False when the unit is missing — the manager then skips the request.
+  static bool isServable(String adUnitId) =>
+      adUnitId.isNotEmpty &&
+      (testMode || !adUnitId.startsWith(_samplePublisher));
 
   /// Add your test device's advertising ID here while testMode is false,
   /// so you can preview production ads on your own device without risking
@@ -78,15 +86,11 @@ class AdConfig {
 
   // ── App Open rules ─────────────────────────────────────────────
   static const Duration appOpenMinInterval = Duration(hours: 4);
-  static const Duration appOpenLoadTimeout = Duration(seconds: 4);
   static const Duration appOpenMaxCacheDuration = Duration(hours: 4);
 
   // ── Interstitial rules ──────────────────────────────────────────
   static const Duration interstitialMinInterval = Duration(minutes: 3);
   static const int interstitialCitySwitchFrequency = 3;
-
-  // ── Native rules ────────────────────────────────────────────────
-  static const int nativeAdEveryNItems = 5;
 
   // ── Retry / backoff (shared by App Open, Interstitial, Native, Banner) ──
   static const int maxRetryAttempts = 5;

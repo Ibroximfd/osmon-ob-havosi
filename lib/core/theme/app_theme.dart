@@ -1,86 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
 
-class AppTheme {
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.bgLight,
-      colorScheme: const ColorScheme.light(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        surface: AppColors.bgLight,
-      ),
-      fontFamily: GoogleFonts.inter().fontFamily,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme)
-          .copyWith(
-            displayLarge: GoogleFonts.outfit(color: AppColors.darkText),
-            displayMedium: GoogleFonts.outfit(color: AppColors.darkText),
-            displaySmall: GoogleFonts.outfit(color: AppColors.darkText),
-            headlineLarge: GoogleFonts.outfit(color: AppColors.darkText),
-            headlineMedium: GoogleFonts.outfit(color: AppColors.darkText),
-            headlineSmall: GoogleFonts.outfit(color: AppColors.darkText),
-            titleLarge: GoogleFonts.outfit(color: AppColors.darkText),
-            titleMedium: GoogleFonts.outfit(color: AppColors.darkText),
-            titleSmall: GoogleFonts.outfit(color: AppColors.darkText),
-          )
-          .apply(
-            bodyColor: AppColors.darkText,
-            displayColor: AppColors.darkText,
-          ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.darkText),
-        titleTextStyle: GoogleFonts.outfit(
-          color: AppColors.darkText,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+import 'osmon_colors.dart';
+import 'osmon_spacing.dart';
+import 'osmon_typography.dart';
+import 'sky_page_transitions.dart';
+
+/// Material theme over the Osmon tokens. Scaffolds are transparent: the live
+/// sky behind the router shows through every screen.
+abstract final class AppTheme {
+  static ThemeData get dark {
+    const scheme = ColorScheme.dark(
+      primary: OsmonColors.accent,
+      onPrimary: OsmonColors.textOnAccent,
+      secondary: OsmonColors.gold,
+      onSecondary: OsmonColors.textOnAccent,
+      surface: OsmonColors.inkRaised,
+      onSurface: OsmonColors.textPrimary,
+      error: OsmonColors.severe,
     );
-  }
-
-  static ThemeData get darkTheme {
+    final textTheme = TextTheme(
+      displayLarge: OsmonType.hero,
+      headlineLarge: OsmonType.titleLarge,
+      headlineMedium: OsmonType.titleMedium,
+      titleLarge: OsmonType.titleMedium,
+      titleMedium: OsmonType.titleSmall,
+      titleSmall: OsmonType.bodyStrong,
+      bodyLarge: OsmonType.bodyLarge,
+      bodyMedium: OsmonType.body,
+      bodySmall: OsmonType.caption,
+      labelLarge: OsmonType.button,
+      labelMedium: OsmonType.captionStrong,
+      labelSmall: OsmonType.micro,
+    );
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.bgDark,
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        surface: AppColors.bgDark,
+      colorScheme: scheme,
+      fontFamily: OsmonType.text,
+      textTheme: textTheme,
+      scaffoldBackgroundColor: Colors.transparent,
+      canvasColor: OsmonColors.inkRaised,
+      splashFactory: InkSparkle.splashFactory,
+      dividerColor: OsmonColors.divider,
+      iconTheme: const IconThemeData(
+        color: OsmonColors.textPrimary,
+        size: OsmonSize.iconMd,
       ),
-      fontFamily: GoogleFonts.inter().fontFamily,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme)
-          .copyWith(
-            displayLarge: GoogleFonts.outfit(color: AppColors.lightText),
-            displayMedium: GoogleFonts.outfit(color: AppColors.lightText),
-            displaySmall: GoogleFonts.outfit(color: AppColors.lightText),
-            headlineLarge: GoogleFonts.outfit(color: AppColors.lightText),
-            headlineMedium: GoogleFonts.outfit(color: AppColors.lightText),
-            headlineSmall: GoogleFonts.outfit(color: AppColors.lightText),
-            titleLarge: GoogleFonts.outfit(color: AppColors.lightText),
-            titleMedium: GoogleFonts.outfit(color: AppColors.lightText),
-            titleSmall: GoogleFonts.outfit(color: AppColors.lightText),
-          )
-          .apply(
-            bodyColor: AppColors.lightText,
-            displayColor: AppColors.lightText,
-          ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.lightText),
-        titleTextStyle: GoogleFonts.outfit(
-          color: AppColors.lightText,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+        titleTextStyle: OsmonType.titleSmall,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: OsmonColors.inkSheet,
+        surfaceTintColor: Colors.transparent,
+        showDragHandle: true,
+        dragHandleColor: OsmonColors.glassStroke,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(OsmonRadius.xxl),
+          ),
         ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: OsmonColors.inkSheet,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(OsmonRadius.xxl),
+        ),
+        titleTextStyle: OsmonType.titleSmall,
+        contentTextStyle: OsmonType.body.copyWith(
+          color: OsmonColors.textSecondary,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: OsmonColors.inkSheet,
+        contentTextStyle: OsmonType.body,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(OsmonRadius.md),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: OsmonColors.glassFill,
+        hintStyle: OsmonType.body.copyWith(color: OsmonColors.textTertiary),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: OsmonSpace.s16,
+          vertical: OsmonSpace.s14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(OsmonRadius.md),
+          borderSide: const BorderSide(color: OsmonColors.glassStroke),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(OsmonRadius.md),
+          borderSide: const BorderSide(color: OsmonColors.glassStroke),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(OsmonRadius.md),
+          borderSide: const BorderSide(color: OsmonColors.accent),
+        ),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: OsmonColors.accent,
+        selectionColor: OsmonColors.accentSoft,
+        selectionHandleColor: OsmonColors.accent,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: OsmonColors.accent,
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: SkyFadeTransitionsBuilder(),
+          TargetPlatform.iOS: SkyFadeTransitionsBuilder(),
+        },
       ),
     );
   }

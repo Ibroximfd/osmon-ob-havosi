@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Release builds shrink resources. The notification icon is referenced by
+     name from Dart only, so R8 would strip it and every notification call
+     would fail ("invalid_icon"). -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_osmon" />

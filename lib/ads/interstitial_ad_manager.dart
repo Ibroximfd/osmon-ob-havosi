@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../core/platform/external_flow.dart';
 import 'ad_config.dart';
 import 'ad_consent_manager.dart';
 import 'ad_session_store.dart';
@@ -25,6 +26,7 @@ class InterstitialAdManager {
 
   Future<void> loadAd() async {
     if (_isLoading || isAdAvailable) return;
+    if (!AdConfig.isServable(AdConfig.interstitialAdUnitId)) return;
 
     try {
       if (!await AdConsentManager.instance.canRequestAds) return;
@@ -61,10 +63,8 @@ class InterstitialAdManager {
 
   void _scheduleRetry() {
     if (_retryAttempt >= AdConfig.maxRetryAttempts) return;
-    final delay = AdConfig.retryBackoff[_retryAttempt.clamp(
-      0,
-      AdConfig.retryBackoff.length - 1,
-    )];
+    final delay = AdConfig
+        .retryBackoff[_retryAttempt.clamp(0, AdConfig.retryBackoff.length - 1)];
     _retryAttempt++;
     _retryTimer?.cancel();
     _retryTimer = Timer(delay, loadAd);
@@ -93,6 +93,7 @@ class InterstitialAdManager {
         onAdShowedFullScreenContent: (ad) {
           AdsState.isFullScreenAdShowing = true;
         },
+        onAdClicked: (ad) => ExternalFlow.markLeaving(),
         onAdFailedToShowFullScreenContent: (ad, error) {
           debugPrint('InterstitialAdManager: failed to show: $error');
           AdsState.isFullScreenAdShowing = false;

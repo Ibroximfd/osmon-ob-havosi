@@ -3,15 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../core/platform/external_flow.dart';
 import 'ad_config.dart';
 import 'ad_consent_manager.dart';
 import 'ad_session_store.dart';
 import 'ads_state.dart';
 
-/// Singleton App Open ad manager. Only ever shown on
-/// AppLifecycleState.resumed (see app_lifecycle_reactor.dart) — never on
-/// cold start, never alongside another full-screen ad, never more often
-/// than AdConfig.appOpenMinInterval.
+/// Singleton App Open ad manager. Only ever shown when the app returns to
+/// the foreground (see app_lifecycle_reactor.dart) — never on cold start,
+/// never in the first session, never alongside another full-screen ad,
+/// never when coming back from our own picker/settings/browser hand-off,
+/// and never more often than AdConfig.appOpenMinInterval.
 class AppOpenAdManager {
   AppOpenAdManager._();
   static final AppOpenAdManager instance = AppOpenAdManager._();
@@ -25,7 +27,8 @@ class AppOpenAdManager {
   bool get isAdAvailable {
     if (_ad == null || _loadTime == null) return false;
     final expired =
-        DateTime.now().difference(_loadTime!) > AdConfig.appOpenMaxCacheDuration;
+        DateTime.now().difference(_loadTime!) >
+        AdConfig.appOpenMaxCacheDuration;
     if (expired) {
       _disposeAd();
       return false;
@@ -35,6 +38,7 @@ class AppOpenAdManager {
 
   Future<void> loadAd() async {
     if (_isLoading || isAdAvailable) return;
+    if (!AdConfig.isServable(AdConfig.appOpenAdUnitId)) return;
 
     try {
       if (!await AdConsentManager.instance.canRequestAds) return;
@@ -72,10 +76,8 @@ class AppOpenAdManager {
 
   void _scheduleRetry() {
     if (_retryAttempt >= AdConfig.maxRetryAttempts) return;
-    final delay = AdConfig.retryBackoff[_retryAttempt.clamp(
-      0,
-      AdConfig.retryBackoff.length - 1,
-    )];
+    final delay = AdConfig
+        .retryBackoff[_retryAttempt.clamp(0, AdConfig.retryBackoff.length - 1)];
     _retryAttempt++;
     _retryTimer?.cancel();
     _retryTimer = Timer(delay, loadAd);
@@ -87,6 +89,10 @@ class AppOpenAdManager {
     try {
       if (AdsState.isFullScreenAdShowing) {
         debugPrint('AppOpenAdManager: another full-screen ad is showing');
+        return;
+      }
+      if (ExternalFlow.isReturningFromExternal) {
+        ExternalFlow.clear();
         return;
       }
       if (!isAdAvailable) {
@@ -106,6 +112,7 @@ class AppOpenAdManager {
         onAdShowedFullScreenContent: (ad) {
           AdsState.isFullScreenAdShowing = true;
         },
+        onAdClicked: (ad) => ExternalFlow.markLeaving(),
         onAdFailedToShowFullScreenContent: (ad, error) {
           debugPrint('AppOpenAdManager: failed to show: $error');
           AdsState.isFullScreenAdShowing = false;

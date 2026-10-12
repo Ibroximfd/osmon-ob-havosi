@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Night sky from the app's clear-night palette. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="290"
+        android:endColor="#1D3A5C"
+        android:centerColor="#0B1830"
+        android:startColor="#03060F" />
+    <corners android:radius="24dp" />
+</shape>

@@ -11,10 +11,10 @@ class ListTileNativeAdFactory: NSObject, FLTNativeAdFactory {
     customOptions: [AnyHashable: Any]? = nil
   ) -> GADNativeAdView? {
     let adView = GADNativeAdView()
-    adView.backgroundColor = UIColor.white
+    adView.backgroundColor = UIColor.white.withAlphaComponent(0.10)
     adView.layer.cornerRadius = 20
     adView.layer.borderWidth = 1
-    adView.layer.borderColor = UIColor.black.withAlphaComponent(0.12).cgColor
+    adView.layer.borderColor = UIColor.white.withAlphaComponent(0.17).cgColor
     adView.clipsToBounds = true
 
     let iconView = UIImageView()
@@ -24,10 +24,11 @@ class ListTileNativeAdFactory: NSObject, FLTNativeAdFactory {
     iconView.translatesAutoresizingMaskIntoConstraints = false
 
     let badgeLabel = UILabel()
-    badgeLabel.text = "Ad"
+    // AdMob requires a visible, localized attribution badge.
+    badgeLabel.text = " \((customOptions?["adLabel"] as? String) ?? "Ad") "
     badgeLabel.font = .boldSystemFont(ofSize: 9)
-    badgeLabel.textColor = .white
-    badgeLabel.backgroundColor = UIColor(red: 1.0, green: 0.70, blue: 0.0, alpha: 1.0)
+    badgeLabel.textColor = UIColor(red: 0.02, green: 0.08, blue: 0.11, alpha: 1.0)
+    badgeLabel.backgroundColor = UIColor(red: 0.94, green: 0.72, blue: 0.27, alpha: 1.0)
     badgeLabel.textAlignment = .center
     badgeLabel.layer.cornerRadius = 3
     badgeLabel.clipsToBounds = true
@@ -35,20 +36,20 @@ class ListTileNativeAdFactory: NSObject, FLTNativeAdFactory {
 
     let headlineLabel = UILabel()
     headlineLabel.font = .boldSystemFont(ofSize: 14)
-    headlineLabel.textColor = UIColor(red: 0.12, green: 0.16, blue: 0.22, alpha: 1.0)
+    headlineLabel.textColor = .white
     headlineLabel.numberOfLines = 1
     headlineLabel.translatesAutoresizingMaskIntoConstraints = false
 
     let bodyLabel = UILabel()
     bodyLabel.font = .systemFont(ofSize: 12)
-    bodyLabel.textColor = UIColor(white: 0.54, alpha: 1.0)
+    bodyLabel.textColor = UIColor.white.withAlphaComponent(0.72)
     bodyLabel.numberOfLines = 2
     bodyLabel.translatesAutoresizingMaskIntoConstraints = false
 
     let ctaButton = UIButton(type: .system)
     ctaButton.titleLabel?.font = .boldSystemFont(ofSize: 12)
-    ctaButton.setTitleColor(.white, for: .normal)
-    ctaButton.backgroundColor = UIColor(red: 0.08, green: 0.40, blue: 0.75, alpha: 1.0)
+    ctaButton.setTitleColor(UIColor(red: 0.02, green: 0.08, blue: 0.11, alpha: 1.0), for: .normal)
+    ctaButton.backgroundColor = UIColor(red: 0.23, green: 0.76, blue: 0.86, alpha: 1.0)
     ctaButton.layer.cornerRadius = 14
     ctaButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14)
     ctaButton.isUserInteractionEnabled = false
@@ -73,8 +74,9 @@ class ListTileNativeAdFactory: NSObject, FLTNativeAdFactory {
     NSLayoutConstraint.activate([
       iconView.widthAnchor.constraint(equalToConstant: 44),
       iconView.heightAnchor.constraint(equalToConstant: 44),
-      badgeLabel.widthAnchor.constraint(equalToConstant: 20),
-      badgeLabel.heightAnchor.constraint(equalToConstant: 14),
+      // At least 15pt each way, as the native ads policy requires.
+      badgeLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 16),
+      badgeLabel.heightAnchor.constraint(equalToConstant: 16),
 
       rootRow.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 12),
       rootRow.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -12),

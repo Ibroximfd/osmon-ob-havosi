@@ -1,0 +1,1052 @@
+{
+  "@@locale": "uz",
+  "actionAllow": "Ruxsat berish",
+  "actionBack": "Orqaga",
+  "actionCancel": "Bekor qilish",
+  "actionClear": "Tozalash",
+  "actionClose": "Yopish",
+  "actionContinue": "Davom etish",
+  "actionDone": "Tayyor",
+  "actionLater": "Keyinroq",
+  "actionOpenSettings": "Sozlamalarni ochish",
+  "actionRetry": "Qayta urinish",
+  "actionSave": "Saqlash",
+  "actionSearch": "Qidirish",
+  "actionShare": "Ulashish",
+  "actionSkip": "O'tkazib yuborish",
+  "actionUpdate": "Yangilash",
+  "adLabel": "Reklama",
+  "alertAdviceDust": "Derazalarni yoping, ko'chaga niqob bilan chiqing.",
+  "alertAdviceFrost": "Suv quvurlari va ko'chatlarni himoyalang.",
+  "alertAdviceHail": "Mashinani yopiq joyga qo'ying, ekinlarni himoyalang.",
+  "alertAdviceHeat": "12:00–17:00 da tashqarida ishlamang, ko'p suv iching.",
+  "alertAdviceHeavyRain": "Past joylarda suv toshqini xavfi — ariq va soylardan uzoq turing.",
+  "alertAdviceSnow": "Yo'llar yopilishi mumkin — safarni kechiktiring.",
+  "alertAdviceThunderstorm": "Ochiq joyda va daraxt tagida turmang.",
+  "alertAdviceWind": "Reklama taxtalari va daraxtlardan uzoq yuring.",
+  "alertKindDust": "Chang bo'roni",
+  "alertKindFrost": "Qattiq sovuq",
+  "alertKindHail": "Do'l",
+  "alertKindHeat": "Kuchli issiq",
+  "alertKindHeavyRain": "Kuchli yomg'ir",
+  "alertKindSnow": "Kuchli qor",
+  "alertKindThunderstorm": "Momaqaldiroq",
+  "alertKindWind": "Kuchli shamol",
+  "alertOrange": "To'q sariq",
+  "alertRed": "Qizil",
+  "alertYellow": "Sariq",
+  "alertsEmptyMessage": "Yaqin 3 kunda viloyatlarda ogohlantirish yo'q.",
+  "alertsEmptyTitle": "Xavfli ob-havo kutilmaydi",
+  "alertsRegions": "Viloyatlar bo'yicha",
+  "alertsSubtitle": "O'zbekiston viloyatlari · 3 kun",
+  "alertsTitle": "Ogohlantirishlar",
+  "alertsYourPlace": "Sizning joyingiz",
+  "allergenGoosefoot": "Sho'ra va olabuta",
+  "allergenGrasses": "Boshoqli o'tlar",
+  "allergenRagweed": "Ambroziya",
+  "allergenTrees": "Daraxtlar: terak, qayrag'och, chinor",
+  "allergenWormwood": "Shuvoq",
+  "appName": "Osmon",
+  "aqiAdviceGood": "Ko'chada bemalol bo'lish mumkin.",
+  "aqiAdviceModerate": "Sezgir odamlar uzoq mashg'ulotni kamaytirsin.",
+  "aqiAdviceSensitive": "Astma va yurak kasalligi borlar ko'chada kam bo'lsin.",
+  "aqiAdviceUnhealthy": "Hamma uchun zararli — derazalarni yoping, niqob taqing.",
+  "aqiAdviceVeryUnhealthy": "Ko'chaga chiqmang, havo tozalagichdan foydalaning.",
+  "aqiGood": "Yaxshi",
+  "aqiHazardous": "Xavfli",
+  "aqiModerate": "O'rtacha",
+  "aqiSensitive": "Sezgirlar uchun zararli",
+  "aqiUnhealthy": "Zararli",
+  "aqiVeryUnhealthy": "Juda zararli",
+  "blueHour": "Ko'k soat",
+  "chatDisclaimer": "AI xato qilishi mumkin — muhim qarorlarni prognoz bilan tekshiring.",
+  "chatEmptyMessage": "Javoblar joriy prognozga asoslanadi.",
+  "chatEmptyTitle": "Ob-havo haqida so'rang",
+  "chatError": "Javob kelmadi.",
+  "chatHint": "Savolingizni yozing…",
+  "chatSend": "Yuborish",
+  "chatSubtitle": "Ob-havo bo'yicha savollaringizga javob",
+  "chatSuggest1": "Bugun nima kiyay?",
+  "chatSuggest2": "Kechqurun yomg'ir yog'adimi?",
+  "chatSuggest3": "Ertaga yugurish uchun eng yaxshi vaqt?",
+  "chatSuggest4": "Dam olish kunlari sayrga chiqsa bo'ladimi?",
+  "chatTitle": "Osmon AI",
+  "chatTyping": "Yozmoqda…",
+  "conditionClear": "Ochiq osmon",
+  "conditionDrizzle": "Mayda yomg'ir",
+  "conditionFog": "Tuman",
+  "conditionFreezingDrizzle": "Muzlovchi mayda yomg'ir",
+  "conditionFreezingRain": "Muzli yomg'ir",
+  "conditionHeavyRain": "Kuchli yomg'ir",
+  "conditionHeavySnow": "Kuchli qor",
+  "conditionMainlyClear": "Asosan ochiq",
+  "conditionOvercast": "Bulutli",
+  "conditionPartlyCloudy": "Qisman bulutli",
+  "conditionRain": "Yomg'ir",
+  "conditionRainShowers": "Jala",
+  "conditionSnow": "Qor",
+  "conditionSnowShowers": "Qor yog'ishi",
+  "conditionThunderstorm": "Momaqaldiroq",
+  "conditionThunderstormHail": "Do'l bilan momaqaldiroq",
+  "cropCotton": "Paxta",
+  "cropGrape": "Uzum",
+  "cropOrchard": "Bog'",
+  "cropVegetables": "Sabzavot",
+  "cropWheat": "Bug'doy",
+  "dataAttribution": "Ma'lumot: Open-Meteo",
+  "dateDayMonth": "{day}-{month}",
+  "@dateDayMonth": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "daySheetChance": "Ehtimol {value}",
+  "@daySheetChance": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "daySheetGusts": "Shamol shiddati {value}",
+  "@daySheetGusts": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "daySheetPrecip": "Yog'in {value} mm",
+  "@daySheetPrecip": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "daySheetSun": "Quyosh {rise} – {set}",
+  "@daySheetSun": {
+    "placeholders": {
+      "rise": {
+        "type": "String"
+      },
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "daySheetUv": "UV {value}",
+  "@daySheetUv": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "daylightLength": "Kun uzunligi {duration}",
+  "@daylightLength": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "departIn1h": "1 soatdan keyin",
+  "departIn2h": "2 soatdan keyin",
+  "departIn4h": "4 soatdan keyin",
+  "departNow": "Hozir",
+  "departTomorrow": "Ertaga 07:00",
+  "dewPoint": "Shudring nuqtasi {temp}",
+  "@dewPoint": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "durationHours": "{hours} soat",
+  "@durationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours} soat {minutes} daq",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMinutes": "{minutes} daqiqa",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "evening": "Kechqurun",
+  "fieldAdvice": "Tavsiyalar",
+  "fieldDisclaimer": "Tavsiyalar ob-havo modeliga asoslangan; muhim qarorlarda agronom bilan maslahatlashing.",
+  "fieldEt0": "Bug'lanish (ET0)",
+  "fieldEt0Caption": "mm/kun · bugun",
+  "fieldFrostAdvice": "Ko'chatlarni yoping, kechqurun sug'oring — nam tuproq issiqni saqlaydi.",
+  "fieldFrostDetail": "Eng sovuq tun: {date} · {temp}",
+  "@fieldFrostDetail": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldFrostTitle": "Tungi sovuq xavfi",
+  "fieldGdd": "Faol harorat yig'indisi",
+  "fieldGddCaption": "1-martdan beri · baza {base}",
+  "@fieldGddCaption": {
+    "placeholders": {
+      "base": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldGddNone": "Mavsum 1-martdan boshlanadi",
+  "fieldSoilMoisture": "Tuproq namligi",
+  "fieldSoilTemp": "Tuproq harorati",
+  "fieldSoilTempCaption": "6 sm chuqurlikda · yuzasi {surface}",
+  "@fieldSoilTempCaption": {
+    "placeholders": {
+      "surface": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldTitle": "Dala rejimi",
+  "frostLikely": "Xavf yuqori",
+  "frostNone": "Xavf yo'q",
+  "frostPossible": "Ehtimol bor",
+  "goldenHour": "Oltin soat",
+  "harvestClear": "Yaqin 5 kunda kuchli yog'in kutilmaydi.",
+  "harvestWarning": "{day} yog'in ehtimoli {chance} — yig'im-terimni oldinroq rejalang.",
+  "@harvestWarning": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "chance": {
+        "type": "String"
+      }
+    }
+  },
+  "hazardFog": "Tuman",
+  "hazardHeavyRain": "Kuchli yomg'ir",
+  "hazardIce": "Muz, sirpanchiq",
+  "hazardSnow": "Qor",
+  "hazardStorm": "Momaqaldiroq",
+  "hazardWind": "Kuchli shamol",
+  "healthAqiTitle": "Havo sifati (AQI)",
+  "healthBreathing": "Nafas yo'llari",
+  "healthDisclaimer": "Bu tibbiy maslahat emas. Kasallik bo'lsa shifokoringizga murojaat qiling.",
+  "healthDust": "Chang",
+  "healthHeat": "Issiqlik zarbasi",
+  "healthMigraine": "Migren xavfi",
+  "healthPollenMeasured": "Model qiymatlari · CAMS",
+  "healthPollenNoData": "Bu hudud uchun gulchang ma'lumoti yo'q.",
+  "healthPollenSeasonal": "Mavsumiy taqvim · O'rta Osiyo uchun taxmin",
+  "healthPollenTitle": "Gulchang",
+  "healthPressureTitle": "Bosim va o'zini his qilish",
+  "healthSubtitle": "{place} · havo, gulchang va bosim",
+  "@healthSubtitle": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "healthTitle": "Salomatlik",
+  "healthUvSkin": "Teri uchun UV",
+  "heatCaution": "Ehtiyot bo'ling",
+  "heatDanger": "Xavfli",
+  "heatNone": "Xavf yo'q",
+  "homeChatTooltip": "Osmon AI bilan suhbat",
+  "homeCurrentLocation": "Joriy joylashuv",
+  "homeEmptyMessage": "Joylashuvingizni aniqlang yoki shaharni qidiring.",
+  "homeEmptyTitle": "Qaysi shahar ob-havosini ko'rsatay?",
+  "homeFavoriteAdd": "Sevimlilarga qo'shish",
+  "homeFavoriteRemove": "Sevimlilardan olib tashlash",
+  "homeFeelsLike": "His qilinadi {temp}",
+  "@homeFeelsLike": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLocateAction": "Joylashuvni aniqlash",
+  "homeLocationAction": "Yoqish",
+  "homeLocationAllowAction": "Ruxsat berish",
+  "homeLocationBlockedMessage": "Telefon sozlamalaridan ruxsat bering. Hozir {city} ko'rsatilmoqda.",
+  "@homeLocationBlockedMessage": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLocationDeniedTitle": "Joylashuvga ruxsat yo'q",
+  "homeLocationMessage": "Aniq ob-havo uchun yoqing. Hozir {city} ko'rsatilmoqda.",
+  "@homeLocationMessage": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLocationOffTitle": "Joylashuv o'chiq",
+  "homeSearchTooltip": "Shahar qidirish",
+  "indexCarWash": "Mashina yuvish",
+  "indexCycling": "Velosiped",
+  "indexLaundry": "Kir quritish",
+  "indexRunning": "Yugurish",
+  "indexStargazing": "Yulduz kuzatish",
+  "indexWalking": "Sayr",
+  "intensityHeavy": "kuchli",
+  "intensityLight": "kuchsiz",
+  "intensityModerate": "o'rtacha",
+  "irrigationDetail": "3 kunda ~{mm} mm suv kerak (≈ {volume} m³/ga) · kutilayotgan yog'in {rain} mm",
+  "@irrigationDetail": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      },
+      "volume": {
+        "type": "String"
+      },
+      "rain": {
+        "type": "String"
+      }
+    }
+  },
+  "irrigationNotNeeded": "Sug'orish shart emas",
+  "irrigationNow": "Hozir sug'oring",
+  "irrigationSoon": "Yaqin kunlarda sug'oring",
+  "lastYearColder": "O'tgan yilgi shu kundan {delta} sovuq",
+  "@lastYearColder": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "lastYearSame": "O'tgan yilgi shu kun bilan deyarli bir xil",
+  "lastYearWarmer": "O'tgan yilgi shu kundan {delta} issiq",
+  "@lastYearWarmer": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "layerAirQuality": "Havo sifati",
+  "layerClouds": "Bulutlar",
+  "layerPrecipitation": "Yog'in",
+  "layerTemperature": "Harorat",
+  "layerWind": "Shamol",
+  "legendHigh": "yuqori",
+  "legendLow": "past",
+  "mapGridFailed": "Ob-havo qatlami yuklanmadi",
+  "mapMyPlace": "Mening joyim",
+  "mapTilesUnavailable": "Xarita foni yuklanmadi — ob-havo qatlami ishlayveradi",
+  "mapTitle": "Ob-havo xaritasi",
+  "mapZoomIn": "Yaqinlashtirish",
+  "mapZoomOut": "Uzoqlashtirish",
+  "methodIsna": "Shimoliy Amerika (ISNA)",
+  "methodKarachi": "Karachi universiteti",
+  "methodMwl": "Musulmon olami ligasi",
+  "methodUmmAlQura": "Ummul Quro (Makka)",
+  "methodUzbekistan": "O'zbekiston musulmonlari idorasi",
+  "metricHumidity": "Namlik",
+  "metricPressure": "Bosim",
+  "metricSun": "Quyosh",
+  "metricUv": "UV indeks",
+  "metricVisibility": "Ko'rinish",
+  "metricWind": "Shamol",
+  "moistureDry": "Quruq",
+  "moistureOk": "Yetarli",
+  "month1": "yanvar",
+  "month10": "oktabr",
+  "month11": "noyabr",
+  "month12": "dekabr",
+  "month2": "fevral",
+  "month3": "mart",
+  "month4": "aprel",
+  "month5": "may",
+  "month6": "iyun",
+  "month7": "iyul",
+  "month8": "avgust",
+  "month9": "sentabr",
+  "moonFirstQuarter": "Birinchi chorak",
+  "moonFull": "To'lin oy",
+  "moonIllumination": "Yoritilgan qismi {value}",
+  "@moonIllumination": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "moonLastQuarter": "Oxirgi chorak",
+  "moonNew": "Yangi oy",
+  "moonTitle": "Oy fazasi",
+  "moonWaningCrescent": "Kamayuvchi hilol",
+  "moonWaningGibbous": "Kamayuvchi oy",
+  "moonWaxingCrescent": "O'suvchi hilol",
+  "moonWaxingGibbous": "O'suvchi oy",
+  "morning": "Ertalab",
+  "navHealth": "Salomatlik",
+  "navHome": "Bosh",
+  "navMap": "Xarita",
+  "navRadar": "Radar",
+  "navSettings": "Sozlama",
+  "notifDailyBody": "Bugun {min}…{max}. Yog'in ehtimoli {chance}.",
+  "@notifDailyBody": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "chance": {
+        "type": "String"
+      }
+    }
+  },
+  "notifDailyTitle": "{city}: {condition}",
+  "@notifDailyTitle": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  "notifDustBody": "{city}: derazalarni yoping, ko'chaga niqob bilan chiqing.",
+  "@notifDustBody": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "notifDustTitle": "Chang bo'roni",
+  "notifFrostBody": "{city}: ko'chatlarni yoping, suv quvurlarini himoya qiling.",
+  "@notifFrostBody": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "notifFrostTitle": "Kechasi sovuq: {temp}",
+  "@notifFrostTitle": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "notifKindDaily": "Ertalabki prognoz (07:00)",
+  "notifKindPrayer": "Namoz vaqti eslatmasi",
+  "notifPrayerBody": "{city} · {time}",
+  "@notifPrayerBody": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "notifPrayerTitle": "{prayer} vaqti kirdi",
+  "@notifPrayerTitle": {
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      }
+    }
+  },
+  "notifRainBody": "{city}: soyabonni oling va kirni yig'ib qo'ying.",
+  "@notifRainBody": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "notifRainTitle": "{minutes} daqiqadan keyin yomg'ir",
+  "@notifRainTitle": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "notifSnowTitle": "{minutes} daqiqadan keyin qor",
+  "@notifSnowTitle": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "notifStormBody": "{city}, {time} atrofida. Ochiq joyda va daraxt tagida turmang.",
+  "@notifStormBody": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "notifStormTitle": "Momaqaldiroq kutilmoqda",
+  "onbFeatureLifeBody": "Havo sifati, sovuq xavfi va yo'ldagi ob-havo bir joyda.",
+  "onbFeatureLifeTitle": "Salomatlik, dala va yo'l",
+  "onbFeatureNowcastBody": "Yomg'ir qachon boshlanib, qachon tinishini oldindan bilasiz.",
+  "onbFeatureNowcastTitle": "Daqiqalik yomg'ir",
+  "onbFeaturePrayerBody": "Internetsiz ham aniq hisoblanadi.",
+  "onbFeaturePrayerTitle": "Namoz vaqtlari va quyosh yo'li",
+  "onbFeaturesSubtitle": "Ekranda haqiqiy osmon, cho'ntakda foydali javoblar.",
+  "onbFeaturesTitle": "Osmon — tirik ob-havo",
+  "onbGranted": "Ruxsat berildi",
+  "onbLanguageSubtitle": "Joylashuvingizga qarab tanladik — xohlasangiz o'zgartiring.",
+  "onbLanguageTitle": "Tilni tanlang",
+  "onbLocationBody": "Ob-havoni aynan siz turgan joy uchun ko'rsatamiz.",
+  "onbLocationDenied": "Ruxsat berilmadi — shaharni keyin qo'lda tanlaysiz.",
+  "onbLocationTitle": "Joylashuv",
+  "onbNotifBody": "Yomg'ir, momaqaldiroq va sovuqdan oldindan ogohlantiramiz.",
+  "onbNotifTitle": "Bildirishnomalar",
+  "onbPermissionsSubtitle": "Ikkalasini ham keyinroq sozlamalardan o'zgartirish mumkin.",
+  "onbPermissionsTitle": "Ikki kichik ruxsat",
+  "onbStart": "Boshlash",
+  "outlookDry": "Yaqin 2 soatda yog'in kutilmaydi",
+  "outlookDrySubtitle": "Radar bo'yicha · har 15 daqiqada yangilanadi",
+  "outlookDustBody": "Havo sifati {aqi}. Ko'chaga niqob bilan chiqing.",
+  "@outlookDustBody": {
+    "placeholders": {
+      "aqi": {
+        "type": "String"
+      }
+    }
+  },
+  "outlookEndsIn": "Tinishiga {duration} qoldi · {intensity}",
+  "@outlookEndsIn": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "intensity": {
+        "type": "String"
+      }
+    }
+  },
+  "outlookLasts": "{duration} davom etadi · {intensity}",
+  "@outlookLasts": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "intensity": {
+        "type": "String"
+      }
+    }
+  },
+  "outlookLastsLong": "Uzoq davom etadi · {intensity}",
+  "@outlookLastsLong": {
+    "placeholders": {
+      "intensity": {
+        "type": "String"
+      }
+    }
+  },
+  "outlookRainAhead": "Yomg'ir {minutes} daqiqadan keyin",
+  "@outlookRainAhead": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "outlookRainNow": "Hozir yomg'ir yog'yapti",
+  "outlookSnowAhead": "Qor {minutes} daqiqadan keyin",
+  "@outlookSnowAhead": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "outlookSnowNow": "Hozir qor yog'yapti",
+  "permissionNotificationsDenied": "Bildirishnomalarga ruxsat berilmagan. Telefon sozlamalaridan yoqing.",
+  "photoAnalyse": "Ob-havoni tahlil qilish",
+  "photoAnalysis": "Tahlil",
+  "photoCamera": "Kamera",
+  "photoEmptyMessage": "Osmon, bulut yoki ko'cha rasmi eng yaxshi natija beradi.",
+  "photoEmptyTitle": "Rasm tanlang",
+  "photoGallery": "Galereya",
+  "photoNew": "Boshqa rasm",
+  "photoPermissionDenied": "Galereyaga saqlashga ruxsat berilmadi.",
+  "photoRestyle": "Ob-havoni o'zgartirish",
+  "photoSave": "Galereyaga saqlash",
+  "photoSaved": "Rasm galereyaga saqlandi",
+  "photoStyleClear": "Musaffo",
+  "photoStyleRain": "Yomg'irli",
+  "photoStyleSnow": "Qorli",
+  "photoStyleStorm": "Momaqaldiroq",
+  "photoStyleSunset": "Quyosh botishi",
+  "photoSubtitle": "Osmon rasmini yuklang — AI uni tahlil qiladi yoki ob-havoni o'zgartiradi",
+  "photoTitle": "AI Foto",
+  "pollenAlder": "Olxa",
+  "pollenBirch": "Qayin",
+  "pollenGrass": "O't o'simliklari",
+  "pollenMugwort": "Shuvoq",
+  "pollenNone": "Yo'q",
+  "pollenOlive": "Zaytun",
+  "pollenRagweed": "Ambroziya",
+  "prayerAsr": "Asr",
+  "prayerDhuhr": "Peshin",
+  "prayerFajr": "Bomdod",
+  "prayerIsha": "Xufton",
+  "prayerMaghrib": "Shom",
+  "prayerMethodLine": "Hisob: {method}",
+  "@prayerMethodLine": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "prayerNext": "Keyingi namoz",
+  "prayerRemaining": "{duration} qoldi",
+  "@prayerRemaining": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "prayerSunrise": "Quyosh",
+  "prayerTitle": "Namoz vaqtlari",
+  "pressureFalling": "Pasaymoqda · 24 soatda {delta}",
+  "@pressureFalling": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "pressureRising": "Ko'tarilmoqda · 24 soatda {delta}",
+  "@pressureRising": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "pressureSteady": "Barqaror",
+  "quickAlerts": "Ogohlantirishlar",
+  "quickChat": "AI suhbat",
+  "quickField": "Dala rejimi",
+  "quickPhoto": "AI Foto",
+  "quickPrayer": "Namoz vaqtlari",
+  "quickRoute": "Yo'l ob-havosi",
+  "radarAlertDust": "Chang bo'roni",
+  "radarAlertFrost": "Tungi sovuq",
+  "radarAlertRain": "Yomg'ir boshlanishidan oldin",
+  "radarAlertSevere": "Momaqaldiroq va do'l",
+  "radarAlerts": "Bildirishnomalar",
+  "radarModelNote": "Model prognozi asosida, har 15 daqiqada: Open-Meteo",
+  "radarNext2h": "Keyingi 2 soat",
+  "radarPause": "To'xtatish",
+  "radarPeak": "Eng kuchli payt {time} · {rate} mm/soat",
+  "@radarPeak": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "radarPlay": "Ijro etish",
+  "radarSubtitle": "{place} · keyingi 2 soat",
+  "@radarSubtitle": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "radarTitle": "Yog'in radari",
+  "ratingFair": "O'rtacha",
+  "ratingGood": "Qulay",
+  "ratingPoor": "Noqulay",
+  "reasonBadAir": "Havo ifloslangan",
+  "reasonClearSky": "Osmon ochiq",
+  "reasonCloudy": "Bulut qalin",
+  "reasonDryDaysAhead": "Yaqin 2 kun quruq",
+  "reasonDusty": "Chang ko'tarilgan",
+  "reasonFreezing": "Suv muzlaydi",
+  "reasonGoodDrying": "Quyosh va shamol tez quritadi",
+  "reasonPleasant": "Havo yoqimli",
+  "reasonRainExpected": "Yomg'ir ehtimoli bor",
+  "reasonSomeClouds": "Qisman bulut",
+  "reasonStormy": "Momaqaldiroq",
+  "reasonTooCold": "Juda sovuq",
+  "reasonTooHot": "Juda issiq",
+  "reasonTooHumid": "Havo juda nam",
+  "reasonWet": "Yog'in ehtimoli",
+  "reasonWindy": "Kuchli shamol",
+  "relativeInMinutes": "{minutes} daqiqadan keyin",
+  "@relativeInMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeNow": "Hozir",
+  "routeAlong": "Yo'l bo'ylab",
+  "routeChoose": "Shaharni tanlang",
+  "routeClear": "Yo'l bo'ylab xavfli hodisa kutilmaydi.",
+  "routeDelayAdvice": "Chiqishni {duration} kechiktirsangiz, xavfli hodisalardan qochasiz.",
+  "@routeDelayAdvice": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "routeDeparture": "Jo'nash vaqti",
+  "routeEmptyMessage": "Ikki shaharni tanlang — yo'lning har bir qismi uchun ob-havoni ko'rsatamiz.",
+  "routeEmptyTitle": "Qayerga ketyapsiz?",
+  "routeEstimated": "Taxminiy yo'nalish — yo'l xizmati javob bermadi",
+  "routeFrom": "Qayerdan",
+  "routeHazardsAhead": "Yo'lda xavfli hodisalar bor — ehtiyot bo'ling.",
+  "routeKm": "{km}-km",
+  "@routeKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeSave": "Yo'nalishni saqlash",
+  "routeSaved": "Saqlangan yo'nalishlar",
+  "routeSummary": "{distance} km · {duration}",
+  "@routeSummary": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "routeSwap": "Almashtirish",
+  "routeTitle": "Yo'l ob-havosi",
+  "routeTo": "Qayerga",
+  "routeUnsave": "Saqlanganlardan olib tashlash",
+  "searchFavorites": "Sevimlilar",
+  "searchHint": "Shahar yoki tuman nomi",
+  "searchNoResultsMessage": "Boshqacha yozib ko'ring: lotin yoki kirill harflarida.",
+  "searchNoResultsTitle": "“{query}” topilmadi",
+  "@searchNoResultsTitle": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchRegional": "Viloyat markazlari",
+  "searchResults": "Natijalar",
+  "searchTitle": "Shahar tanlash",
+  "searchUseLocation": "Joriy joylashuvim",
+  "sectionDaily": "10 kunlik prognoz",
+  "sectionHourly": "Soatlik prognoz",
+  "sectionIndices": "Bugun nima qilsa bo'ladi",
+  "sectionNow": "Hozirgi holat",
+  "sectionQuick": "Bo'limlar",
+  "sensitivityHigh": "Bosim keskin o'zgarmoqda — migren va bo'g'im og'rig'i xavfi yuqori.",
+  "sensitivityLow": "Bosim barqaror — meteo-sezgir odamlar uchun qulay kun.",
+  "sensitivityModerate": "Bosim o'zgarmoqda — bosh og'rig'i bo'lishi mumkin.",
+  "settingsAbout": "Ilova haqida",
+  "settingsAdPrivacy": "Reklama va maxfiylik sozlamalari",
+  "settingsAppearance": "Ko'rinish",
+  "settingsBatterySaver": "Batareyani tejash",
+  "settingsBatterySaverHint": "Kamroq zarracha va 30 kadr/s",
+  "settingsDataSources": "Ma'lumotlar: Open-Meteo · Xarita: OpenFreeMap, OpenStreetMap · Yo'nalish: OSRM",
+  "settingsLanguage": "Til",
+  "settingsLanguageHint": "Birinchi ochilishda joylashuvingizga qarab tanlangan.",
+  "settingsLiveBackground": "Jonli osmon foni",
+  "settingsLiveBackgroundHint": "Fon haqiqiy ob-havo bilan birga harakatlanadi",
+  "settingsNotifications": "Bildirishnomalar",
+  "settingsPrayerMethod": "Namoz vaqtlari hisobi",
+  "settingsPrayerMethodHint": "Asr — hanafiy mazhabi bo'yicha",
+  "settingsPressure": "Bosim",
+  "settingsPrivacyPolicy": "Maxfiylik siyosati",
+  "settingsRate": "Ilovani baholash",
+  "settingsReduceMotion": "Harakatni kamaytirish",
+  "settingsReduceMotionHint": "Fon to'xtaydi, animatsiyalar kamayadi",
+  "settingsTemperature": "Harorat",
+  "settingsTitle": "Sozlamalar",
+  "settingsUnits": "O'lchov birliklari",
+  "settingsVersion": "Versiya {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsWind": "Shamol tezligi",
+  "severityHigh": "Yuqori",
+  "severityLow": "Past",
+  "severityModerate": "O'rtacha",
+  "severityVeryHigh": "Juda yuqori",
+  "sprayHint": "Shamol 12 km/soatdan kam, 3 soat yog'insiz",
+  "sprayNone": "Yaqin 3 kunda qulay oyna yo'q — shamol yoki yog'in xalaqit beradi.",
+  "sprayTitle": "Dori purkash oynasi",
+  "sprayWindow": "{day}, {start}–{end}",
+  "@sprayWindow": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "stateErrorMessage": "Server javob bermadi. Birozdan keyin qayta urinib ko'ring.",
+  "stateErrorTitle": "Ma'lumot yuklanmadi",
+  "stateLoading": "Yuklanmoqda",
+  "stateNotConfiguredMessage": "Bu funksiya keyingi yangilanishda ishga tushadi.",
+  "stateNotConfiguredTitle": "AI hozircha o'chirilgan",
+  "stateOfflineBanner": "Internet yo'q — oxirgi saqlangan ma'lumot",
+  "stateOfflineMessage": "Internetga ulaning va qayta urinib ko'ring.",
+  "stateOfflineTitle": "Internet yo'q",
+  "statePermissionTitle": "Ruxsat berilmagan",
+  "stateQuotaMessage": "Xizmat hozir band. Bir daqiqadan keyin qayta urinib ko'ring.",
+  "stateUpdatedAt": "Yangilangan: {time}",
+  "@stateUpdatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "storyAiLabel": "Osmon AI · kun rejasi",
+  "storyBadAir": "Havo sifati yomon ({aqi}) — sport bilan uyda shug'ullaning.",
+  "@storyBadAir": {
+    "placeholders": {
+      "aqi": {
+        "type": "String"
+      }
+    }
+  },
+  "storyBestHour": "Ko'chada bo'lish uchun eng yaxshi vaqt — {time}.",
+  "@storyBestHour": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "storyCalm": "Kun tinch o'tadi — maxsus ehtiyot choralari kerak emas.",
+  "storyCold": "{temp} gacha sovuq — qalin kiyining, qo'lqop oling.",
+  "@storyCold": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "storyFogMorning": "Ertalab tuman — haydovchilar ehtiyot bo'lsin.",
+  "storyHeat": "Kunduzi {temp} gacha isiydi — 12:00–16:00 da soyada yuring, ko'p suv iching.",
+  "@storyHeat": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "storyLayers": "Ertalab {temp}, kunduzi iliq — qatlamli kiyining.",
+  "@storyLayers": {
+    "placeholders": {
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
+  "storyLocalLabel": "Kun rejasi",
+  "storySnowIce": "Yo'llar sirpanchiq bo'lishi mumkin — ehtiyot bo'ling va issiq kiying.",
+  "storyStorm": "{time} atrofida momaqaldiroq — ochiq joyda qolmang.",
+  "@storyStorm": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "storyStrongUv": "UV indeks {value} — krem va ko'zoynak kerak.",
+  "@storyStrongUv": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "storyUmbrella": "{time} atrofida yomg'ir ehtimoli {chance} — soyabonni oling.",
+  "@storyUmbrella": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "chance": {
+        "type": "String"
+      }
+    }
+  },
+  "storyWind": "{time} atrofida shamol {speed} gacha kuchayadi.",
+  "@storyWind": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "sunBelowHorizon": "Quyosh ufq ostida",
+  "sunNoon": "Zenit {time}",
+  "@sunNoon": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sunTitle": "Quyosh yo'li",
+  "today": "Bugun",
+  "tomorrow": "Ertaga",
+  "tonight": "Bugun kechasi",
+  "unitCm": "sm",
+  "unitHpa": "hPa",
+  "unitKm": "km",
+  "unitKmh": "km/soat",
+  "unitMicrograms": "mkg/m³",
+  "unitMm": "mm",
+  "unitMmHg": "mm sim. ust.",
+  "unitMs": "m/s",
+  "unitPercent": "{value}%",
+  "@unitPercent": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "updateForcedMessage": "Bu versiya endi qo'llab-quvvatlanmaydi. Davom etish uchun yangilang.",
+  "updateMessage": "Yangilang — yangi funksiyalar va tezroq ishlash sizni kutmoqda.",
+  "updateTitle": "Yangi versiya chiqdi",
+  "uvCaptionHigh": "Tushda soyada yuring",
+  "uvCaptionLow": "Xavfsiz",
+  "uvCaptionModerate": "Krem suring",
+  "uvCaptionVeryHigh": "Ko'chada kam bo'ling",
+  "visibilityGood": "Yaxshi ko'rinadi",
+  "visibilityKm": "{km} km",
+  "@visibilityKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "visibilityPoor": "Tuman, ehtiyot bo'ling",
+  "weekday1": "Dushanba",
+  "weekday2": "Seshanba",
+  "weekday3": "Chorshanba",
+  "weekday4": "Payshanba",
+  "weekday5": "Juma",
+  "weekday6": "Shanba",
+  "weekday7": "Yakshanba",
+  "weekdayShort1": "Du",
+  "weekdayShort2": "Se",
+  "weekdayShort3": "Ch",
+  "weekdayShort4": "Pa",
+  "weekdayShort5": "Ju",
+  "weekdayShort6": "Sh",
+  "weekdayShort7": "Ya",
+  "widgetDry": "2 soat ichida yog'in yo'q",
+  "widgetRainIn": "Yomg'ir {minutes} daqiqadan keyin",
+  "@widgetRainIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "widgetRainNow": "Hozir yog'moqda",
+  "widgetUpdated": "Yangilandi {time}",
+  "@widgetUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "windE": "sharqdan",
+  "windGustsFrom": "{direction}, shiddat {gusts}",
+  "@windGustsFrom": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "gusts": {
+        "type": "String"
+      }
+    }
+  },
+  "windN": "shimoldan",
+  "windNE": "shimoli-sharqdan",
+  "windNW": "shimoli-g'arbdan",
+  "windS": "janubdan",
+  "windSE": "janubi-sharqdan",
+  "windSW": "janubi-g'arbdan",
+  "windW": "g'arbdan"
+}

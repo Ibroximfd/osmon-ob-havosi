@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/native_ad_card_bg"
-    android:padding="12dp">
+    android:paddingStart="12dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:paddingEnd="28dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,12 +39,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/native_ad_badge_bg"
+                    android:minHeight="16dp"
+                    android:minWidth="16dp"
+                    android:gravity="center"
+                    android:textColor="#04141B"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:paddingTop="1dp"
                     android:paddingBottom="1dp"
                     android:text="Ad"
-                    android:textColor="#FFFFFF"
                     android:textSize="9sp"
                     android:textStyle="bold" />
 
@@ -52,7 +58,7 @@
                     android:layout_marginStart="6dp"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textColor="#1E293B"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -64,7 +70,7 @@
                 android:layout_marginTop="2dp"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textColor="#8A94A6"
+                android:textColor="#B8FFFFFF"
                 android:textSize="12sp" />
 
             <RatingBar
@@ -91,7 +97,7 @@
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
+            android:textColor="#04141B"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>

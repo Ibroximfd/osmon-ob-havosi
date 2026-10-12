@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../core/platform/external_flow.dart';
 import 'ad_config.dart';
 import 'ad_consent_manager.dart';
 
@@ -23,9 +24,15 @@ class NativeAdManager extends ChangeNotifier {
       _states[slotKey] ?? NativeAdSlotState.loading;
 
   /// Idempotent — safe to call every time a slot's widget is built.
-  Future<void> ensureLoaded(String slotKey) async {
+  /// [adLabel] is the localized attribution badge ("Reklama", "Реклама",
+  /// "Ad"…) — AdMob requires one on every native ad.
+  Future<void> ensureLoaded(String slotKey, {required String adLabel}) async {
     if (_states.containsKey(slotKey)) return;
     _states[slotKey] = NativeAdSlotState.loading;
+    if (!AdConfig.isServable(AdConfig.nativeAdUnitId)) {
+      _states[slotKey] = NativeAdSlotState.failed;
+      return;
+    }
 
     try {
       if (!await AdConsentManager.instance.canRequestAds) {
@@ -45,7 +52,13 @@ class NativeAdManager extends ChangeNotifier {
         adUnitId: AdConfig.nativeAdUnitId,
         factoryId: AdConfig.nativeAdFactoryId,
         request: const AdRequest(),
+        customOptions: <String, Object>{'adLabel': adLabel},
+        // The card keeps its top-right corner clear for the AdChoices icon.
+        nativeAdOptions: NativeAdOptions(
+          adChoicesPlacement: AdChoicesPlacement.topRightCorner,
+        ),
         listener: NativeAdListener(
+          onAdClicked: (ad) => ExternalFlow.markLeaving(),
           onAdLoaded: (ad) {
             debugPrint('NativeAdManager: loaded slot $slotKey');
             _ads[slotKey] = ad as NativeAd;
