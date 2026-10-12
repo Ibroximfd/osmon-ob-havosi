@@ -60,8 +60,12 @@ class _MapViewState extends State<MapView> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
+          // Panels above repaint on their own (timeline, chips) without
+          // forcing the map to repaint with them, and vice versa.
           Positioned.fill(
-            child: OsmonMap(controller: _controller, tint: tint),
+            child: RepaintBoundary(
+              child: OsmonMap(controller: _controller, tint: tint),
+            ),
           ),
           Positioned(
             top: padding.top + OsmonSpace.s8,
@@ -112,8 +116,10 @@ class _TopBar extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: OsmonSpace.gutter),
+            // An opaque sheet, not blur: a backdrop filter over a moving map
+            // is recomputed on every frame of a pan.
             child: GlassPanel(
-              blur: true,
+              fill: OsmonColors.inkSheet,
               radius: OsmonRadius.md,
               padding: const EdgeInsets.symmetric(
                 horizontal: OsmonSpace.s14,

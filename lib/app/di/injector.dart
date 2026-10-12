@@ -53,6 +53,7 @@ import '../../features/weather/domain/weather_repository.dart';
 import '../../features/weather/presentation/bloc/weather_bloc.dart';
 import '../services/home_widget_sync.dart';
 import '../services/notification_planner.dart';
+import '../services/push_messaging.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -67,6 +68,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<Dio>(createHttpClient)
     ..registerSingleton<LocalNotifier>(notifier)
     ..registerSingleton<NotificationPermissions>(notifier)
+    ..registerLazySingleton<PushMessaging>(() => PushMessaging(sl()))
     ..registerLazySingleton<TimeZoneResolver>(TzTimeZoneResolver.new)
     // Repositories
     ..registerLazySingleton<SettingsRepository>(

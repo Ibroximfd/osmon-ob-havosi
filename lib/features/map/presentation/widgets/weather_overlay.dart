@@ -67,8 +67,12 @@ final class _OverlayPainter extends CustomPainter {
     final east = project(bounds.north, bounds.east);
     final radius = ((east.dx - west.dx).abs() / _columns) * 0.95;
     if (radius <= 0) return;
+    // Zoomed in, most of the field lies off screen; painting it anyway is
+    // wasted fill on every frame of a pan.
+    final visible = (Offset.zero & size).inflate(radius);
     for (final cell in cells) {
       final center = project(cell.point.latitude, cell.point.longitude);
+      if (!visible.contains(center)) continue;
       switch (layer) {
         case MapLayer.temperature:
           _blob(

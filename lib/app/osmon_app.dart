@@ -13,8 +13,11 @@ import '../features/settings/domain/settings_repository.dart';
 import '../features/settings/presentation/bloc/settings_bloc.dart';
 import '../features/weather/presentation/bloc/weather_bloc.dart';
 import 'di/injector.dart';
+import 'firebase/firebase_setup.dart';
+import 'firebase/screen_tracker.dart';
 import 'locale/fallback_localizations.dart';
 import 'router/app_router.dart';
+import 'router/app_routes.dart';
 import 'side_effects.dart';
 
 class OsmonApp extends StatefulWidget {
@@ -26,9 +29,17 @@ class OsmonApp extends StatefulWidget {
 
 class _OsmonAppState extends State<OsmonApp> {
   late final GoRouter _router = createRouter(sl<SettingsRepository>());
+  ScreenTracker? _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    if (FirebaseSetup.isReady) _screens = ScreenTracker(_router);
+  }
 
   @override
   void dispose() {
+    _screens?.dispose();
     _router.dispose();
     super.dispose();
   }
@@ -59,8 +70,9 @@ class _OsmonAppState extends State<OsmonApp> {
           GlobalWidgetsLocalizations.delegate,
         ],
         routerConfig: _router,
-        builder: (context, child) =>
-            AppSideEffects(child: _Sky(child: child ?? const SizedBox())),
+        builder: (context, child) => AppSideEffects(
+          child: _Sky(router: _router, child: child ?? const SizedBox()),
+        ),
       ),
     ),
   );
@@ -69,9 +81,15 @@ class _OsmonAppState extends State<OsmonApp> {
 /// One live sky behind the whole router, following the current forecast
 /// and the user's motion settings.
 class _Sky extends StatelessWidget {
-  const _Sky({required this.child});
+  const _Sky({required this.router, required this.child});
 
+  final GoRouter router;
   final Widget child;
+
+  /// The full-screen map covers the sky completely; animating it there only
+  /// takes frames away from the map.
+  bool get _hidden =>
+      router.routerDelegate.currentConfiguration.uri.path == AppRoutes.map;
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +99,14 @@ class _Sky extends StatelessWidget {
     final settings = context.select<SettingsBloc, AppSettings>(
       (bloc) => bloc.state.settings,
     );
-    return SkyBackdrop(
-      scene: scene,
-      animate: settings.animatesSky,
-      batterySaver: settings.batterySaver,
+    return ListenableBuilder(
+      listenable: router.routerDelegate,
+      builder: (context, child) => SkyBackdrop(
+        scene: scene,
+        animate: settings.animatesSky && !_hidden,
+        batterySaver: settings.batterySaver,
+        child: child!,
+      ),
       child: child,
     );
   }

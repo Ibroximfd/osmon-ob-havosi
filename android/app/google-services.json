@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "275020379230",
+    "project_id": "osmon-ob-havo",
+    "storage_bucket": "osmon-ob-havo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275020379230:android:1b89537ce2d07b8c1d70cf",
+        "android_client_info": {
+          "package_name": "uz.osmon.osmon_uzbekiston_ob_havosi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDo_My9un3lbwLAhydMnZbRIs8HjGwY4sE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,6 +19,9 @@ import 'weather_overlay.dart';
 
 /// flutter_map with OpenFreeMap vector tiles in the Osmon night style, the
 /// weather field on top, and value chips for the regional centres.
+///
+/// The base map is built once per style and tile source; grid loads and
+/// playback steps only rebuild the weather layers above it.
 class OsmonMap extends StatefulWidget {
   const OsmonMap({
     super.key,
@@ -44,18 +47,49 @@ class OsmonMap extends StatefulWidget {
 }
 
 class _OsmonMapState extends State<OsmonMap> {
-  Future<vtr.Theme>? _theme;
   String? _themeLanguage;
+  vtr.Theme? _theme;
+  Widget? _baseTiles;
+  String? _baseTemplate;
+  vtr.Theme? _baseTheme;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final language =
         context.read<SettingsBloc>().state.settings.languageCode ?? 'uz';
-    if (language != _themeLanguage) {
-      _themeLanguage = language;
-      _theme = MapStyle.load(language);
+    if (language == _themeLanguage) return;
+    _themeLanguage = language;
+    MapStyle.load(language).then((theme) {
+      if (mounted && language == _themeLanguage) {
+        setState(() => _theme = theme);
+      }
+    });
+  }
+
+  /// Same instance while the style and source stay put, so Flutter skips
+  /// the tile layer entirely when the parent rebuilds.
+  Widget? _tilesFor(String? template) {
+    final theme = _theme;
+    if (template == null || theme == null) return null;
+    if (template != _baseTemplate || theme != _baseTheme) {
+      _baseTemplate = template;
+      _baseTheme = theme;
+      _baseTiles = VectorTileLayer(
+        theme: theme,
+        // OpenMapTiles are cut for 512 px: one tile a zoom level lower
+        // covers what four default-sized tiles would, at a quarter of the
+        // decoding and rendering work.
+        tileOffset: TileOffset.mapbox,
+        tileProviders: TileProviders(<String, VectorTileProvider>{
+          'openmaptiles': NetworkVectorTileProvider(
+            urlTemplate: template,
+            maximumZoom: OsmonMap._tileMaxZoom,
+          ),
+        }),
+      );
     }
+    return _baseTiles;
   }
 
   void _reportViewport() {
@@ -84,23 +118,22 @@ class _OsmonMapState extends State<OsmonMap> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final formats = formatsOf(context);
-    final l10n = context.l10n;
-    return BlocConsumer<MapBloc, MapState>(
-      listenWhen: (previous, current) =>
-          previous.focusRevision != current.focusRevision,
-      listener: (context, state) {
-        final focus = state.focus;
-        if (focus == null) return;
-        widget.controller.move(
-          LatLng(focus.point.latitude, focus.point.longitude),
-          widget.controller.camera.zoom,
-        );
-      },
-      builder: (context, state) {
-        final focus = state.focus;
-        final template = state.tileTemplate;
+  Widget build(BuildContext context) => BlocListener<MapBloc, MapState>(
+    listenWhen: (previous, current) =>
+        previous.focusRevision != current.focusRevision,
+    listener: (context, state) {
+      final focus = state.focus;
+      if (focus == null) return;
+      widget.controller.move(
+        LatLng(focus.point.latitude, focus.point.longitude),
+        widget.controller.camera.zoom,
+      );
+    },
+    child: BlocSelector<MapBloc, MapState, String?>(
+      selector: (state) => state.tileTemplate,
+      builder: (context, template) {
+        final focus = context.read<MapBloc>().state.focus;
+        final tiles = _tilesFor(template);
         return FlutterMap(
           mapController: widget.controller,
           options: MapOptions(
@@ -120,38 +153,49 @@ class _OsmonMapState extends State<OsmonMap> {
             ),
           ),
           children: <Widget>[
-            if (template != null)
-              FutureBuilder<vtr.Theme>(
-                future: _theme,
-                builder: (context, snapshot) {
-                  final theme = snapshot.data;
-                  if (theme == null) return const SizedBox.shrink();
-                  return VectorTileLayer(
-                    theme: theme,
-                    tileProviders: TileProviders(<String, VectorTileProvider>{
-                      'openmaptiles': NetworkVectorTileProvider(
-                        urlTemplate: template,
-                        maximumZoom: OsmonMap._tileMaxZoom,
-                      ),
-                    }),
-                  );
-                },
-              ),
-            if (state.grid case final grid?)
-              WeatherOverlay(grid: grid, layer: state.layer, step: state.step),
-            MapMarkers(
-              grid: state.grid,
-              layer: state.layer,
-              step: state.step,
-              focus: focus,
-              formats: formats,
-              tint: widget.tint,
-              millimetresLabel: l10n.unitMm,
-            ),
+            ?tiles,
+            _WeatherLayers(tint: widget.tint),
             const _Attribution(),
           ],
         );
       },
+    ),
+  );
+}
+
+/// The weather field and the value chips — the only map layers that change
+/// with grid loads and playback steps.
+class _WeatherLayers extends StatelessWidget {
+  const _WeatherLayers({required this.tint});
+
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) {
+    final formats = formatsOf(context);
+    final millimetres = context.l10n.unitMm;
+    return BlocBuilder<MapBloc, MapState>(
+      buildWhen: (previous, current) =>
+          previous.grid != current.grid ||
+          previous.layer != current.layer ||
+          previous.step != current.step ||
+          previous.focus != current.focus,
+      builder: (context, state) => Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          if (state.grid case final grid?)
+            WeatherOverlay(grid: grid, layer: state.layer, step: state.step),
+          MapMarkers(
+            grid: state.grid,
+            layer: state.layer,
+            step: state.step,
+            focus: state.focus,
+            formats: formats,
+            tint: tint,
+            millimetresLabel: millimetres,
+          ),
+        ],
+      ),
     );
   }
 }

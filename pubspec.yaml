@@ -4,7 +4,7 @@ description: "Osmon - O'zbekiston ob-havo ilovasi"
 publish_to: 'none'
 
 # The previous release was 2.0.1+6; the line was dropped in the last commit.
-version: 2.0.2+9
+version: 2.0.4+11
 
 environment:
   sdk: ^3.10.8
@@ -55,6 +55,10 @@ dependencies:
   # UI
   lucide_icons: ^0.257.0
   flutter_native_splash: ^2.4.7
+  firebase_core: ^4.15.0
+  firebase_analytics: ^12.6.0
+  firebase_crashlytics: ^5.4.0
+  firebase_messaging: ^16.7.0
 
 dev_dependencies:
   flutter_test:

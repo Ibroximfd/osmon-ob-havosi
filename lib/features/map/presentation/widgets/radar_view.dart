@@ -117,10 +117,12 @@ class _RadarPanel extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Positioned.fill(
-              child: OsmonMap(
-                controller: controller,
-                tint: tint,
-                initialZoom: zoom,
+              child: RepaintBoundary(
+                child: OsmonMap(
+                  controller: controller,
+                  tint: tint,
+                  initialZoom: zoom,
+                ),
               ),
             ),
             Positioned(

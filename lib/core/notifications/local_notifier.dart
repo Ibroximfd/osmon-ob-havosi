@@ -11,7 +11,11 @@ import '../theme/osmon_colors.dart';
 enum NotificationChannel {
   daily('osmon_daily', 'Daily forecast', Importance.defaultImportance),
   alerts('osmon_alerts', 'Weather alerts', Importance.high),
-  prayer('osmon_prayer', 'Prayer times', Importance.low);
+  prayer('osmon_prayer', 'Prayer times', Importance.low),
+
+  /// Announcements pushed from the Firebase console; also the channel the
+  /// manifest names for system-shown pushes.
+  news('osmon_news', 'News', Importance.high);
 
   const NotificationChannel(this.id, this.title, this.importance);
 
@@ -82,6 +86,23 @@ final class LocalNotifier implements NotificationPermissions {
       return await ios.requestPermissions(alert: true, sound: true) ?? false;
     }
     return false;
+  }
+
+  /// Channels are otherwise created on first use; a push shown by the
+  /// system before that would land in a generic "Miscellaneous" channel.
+  Future<void> ensureChannel(NotificationChannel channel) async {
+    await initialize();
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.createNotificationChannel(
+          AndroidNotificationChannel(
+            channel.id,
+            channel.title,
+            importance: channel.importance,
+          ),
+        );
   }
 
   Future<void> show({

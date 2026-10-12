@@ -16,11 +16,16 @@ class OsmonNavBar extends StatelessWidget {
     required this.currentIndex,
     required this.onSelected,
     required this.tint,
+    this.overMap = false,
   });
 
   final int currentIndex;
   final ValueChanged<int> onSelected;
   final Color tint;
+
+  /// Over the full-screen map the bar is an opaque sheet: a blur there
+  /// would be recomputed on every frame of a pan.
+  final bool overMap;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +38,9 @@ class OsmonNavBar extends StatelessWidget {
       (icon: LucideIcons.settings2, label: l10n.navSettings),
     ];
     return GlassPanel(
-      blur: true,
+      blur: !overMap,
       radius: OsmonRadius.xl,
-      fill: OsmonColors.navBar,
+      fill: overMap ? OsmonColors.inkSheet : OsmonColors.navBar,
       padding: const EdgeInsets.symmetric(horizontal: OsmonSpace.s6),
       child: SizedBox(
         height: OsmonSize.navBarHeight,

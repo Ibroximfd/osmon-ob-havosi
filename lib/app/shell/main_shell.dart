@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/sky/sky_palette.dart';
 import '../../core/theme/osmon_spacing.dart';
 import '../../features/weather/presentation/bloc/weather_bloc.dart';
+import '../router/app_routes.dart';
 import '../update/update_prompt.dart';
 import 'osmon_nav_bar.dart';
 
@@ -18,6 +19,14 @@ class MainShell extends StatelessWidget {
     // Tapping the active tab returns it to its first page.
     initialLocation: index == navigationShell.currentIndex,
   );
+
+  bool get _onMap =>
+      navigationShell
+          .route
+          .branches[navigationShell.currentIndex]
+          .defaultRoute
+          ?.path ==
+      AppRoutes.map;
 
   @override
   Widget build(BuildContext context) => UpdatePrompt(
@@ -42,6 +51,7 @@ class MainShell extends StatelessWidget {
                   currentIndex: navigationShell.currentIndex,
                   onSelected: _select,
                   tint: tint,
+                  overMap: _onMap,
                 ),
               ),
             ),

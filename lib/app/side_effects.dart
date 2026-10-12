@@ -6,13 +6,15 @@ import '../features/settings/domain/app_settings.dart';
 import '../features/settings/presentation/bloc/settings_bloc.dart';
 import '../features/weather/presentation/bloc/weather_bloc.dart';
 import 'di/injector.dart';
+import 'firebase/firebase_setup.dart';
 import 'services/home_widget_sync.dart';
 import 'services/notification_planner.dart';
+import 'services/push_messaging.dart';
 
 /// App-wide reactions that are not UI: every fresh forecast updates the
 /// home widget and the notification plan; settings changes re-plan prayer
-/// reminders; returning to the app re-checks location access. Listeners,
-/// not Blocs, own these platform calls.
+/// reminders and move the push topic; returning to the app re-checks
+/// location access. Listeners, not Blocs, own these platform calls.
 class AppSideEffects extends StatefulWidget {
   const AppSideEffects({super.key, required this.child});
 
@@ -68,6 +70,14 @@ class _AppSideEffectsState extends State<AppSideEffects> {
             sl<NotificationPlanner>().schedulePrayers(place, state.settings);
           }
         },
+      ),
+      BlocListener<SettingsBloc, SettingsState>(
+        listenWhen: (previous, current) =>
+            FirebaseSetup.isReady &&
+            previous.settings.languageCode != current.settings.languageCode,
+        listener: (context, state) => sl<PushMessaging>().syncLanguage(
+          state.settings.languageCode ?? 'uz',
+        ),
       ),
     ],
     child: widget.child,

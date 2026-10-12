@@ -147,7 +147,7 @@ class MapLegend extends StatelessWidget {
       ),
     };
     return GlassPanel(
-      blur: true,
+      fill: OsmonColors.inkSheet,
       radius: OsmonRadius.md,
       padding: const EdgeInsets.symmetric(
         horizontal: OsmonSpace.s12,
@@ -201,7 +201,7 @@ class PrecipitationTimeline extends StatelessWidget {
     if (stepTimes.length < 2) return const SizedBox.shrink();
     final current = stepTimes[step.clamp(0, stepTimes.length - 1)];
     return GlassPanel(
-      blur: true,
+      fill: OsmonColors.inkSheet,
       radius: OsmonRadius.md,
       padding: const EdgeInsets.fromLTRB(
         OsmonSpace.s4,

@@ -25,6 +25,14 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2122406741205447~2535659455"/>
+        <!-- Firebase Cloud Messaging: pushes shown by the system while the app
+             is in the background use the app's own icon and news channel. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_osmon"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="osmon_news"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
