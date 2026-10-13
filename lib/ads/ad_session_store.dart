@@ -3,14 +3,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// SharedPreferences-backed state for ad frequency/session rules.
 /// All ad managers should go through this instead of touching prefs directly.
 class AdSessionStore {
-  AdSessionStore._();
-  static final AdSessionStore instance = AdSessionStore._();
+  AdSessionStore({DateTime Function()? now}) : _now = now ?? DateTime.now;
+  static final AdSessionStore instance = AdSessionStore();
 
   static const _kLaunchCount = 'ads_launch_count';
+  static const _kFirstLaunchAt = 'ads_first_launch_at';
   static const _kAppOpenLastShownAt = 'ads_app_open_last_shown_at';
   static const _kInterstitialLastShownAt = 'ads_interstitial_last_shown_at';
-  static const _kCitySwitchCount = 'ads_city_switch_count';
+  static const _kTransitionCount = 'ads_transition_count';
+  static const _kInterstitialDay = 'ads_interstitial_day';
+  static const _kInterstitialDayCount = 'ads_interstitial_day_count';
 
+  final DateTime Function() _now;
   SharedPreferences? _prefs;
   bool? _isFirstSessionCache;
 
@@ -28,6 +32,7 @@ class AdSessionStore {
     final launchCount = prefs.getInt(_kLaunchCount) ?? 0;
     if (launchCount == 0) {
       await prefs.setInt(_kLaunchCount, 1);
+      await prefs.setInt(_kFirstLaunchAt, _now().millisecondsSinceEpoch);
       _isFirstSessionCache = true;
     } else {
       _isFirstSessionCache = false;
@@ -38,53 +43,72 @@ class AdSessionStore {
   Future<bool> canShowAppOpenAd(Duration minInterval) async {
     if (await isFirstSession()) return false;
     final prefs = await _p;
-    final lastShown = prefs.getInt(_kAppOpenLastShownAt);
-    if (lastShown == null) return true;
-    final elapsed = DateTime.now().difference(
-      DateTime.fromMillisecondsSinceEpoch(lastShown),
-    );
-    return elapsed >= minInterval;
+    return _elapsedSince(prefs, _kAppOpenLastShownAt) >= minInterval;
   }
 
   Future<void> recordAppOpenShown() async {
     final prefs = await _p;
-    await prefs.setInt(
-      _kAppOpenLastShownAt,
-      DateTime.now().millisecondsSinceEpoch,
-    );
+    await prefs.setInt(_kAppOpenLastShownAt, _now().millisecondsSinceEpoch);
   }
 
-  Future<bool> canShowInterstitial({
+  /// Counts a transition (city switch, feature page opened) and tells
+  /// whether an interstitial may show on it.
+  Future<bool> recordTransitionAndCheck({
     required Duration minInterval,
-    required int citySwitchFrequency,
+    required int frequency,
+    required int dailyCap,
+    required Duration afterAppOpen,
+    required Duration installGrace,
   }) async {
     if (await isFirstSession()) return false;
     final prefs = await _p;
+    final transitions = (prefs.getInt(_kTransitionCount) ?? 0) + 1;
+    await prefs.setInt(_kTransitionCount, transitions);
 
-    final lastShown = prefs.getInt(_kInterstitialLastShownAt);
-    if (lastShown != null) {
-      final elapsed = DateTime.now().difference(
-        DateTime.fromMillisecondsSinceEpoch(lastShown),
-      );
-      if (elapsed < minInterval) return false;
+    // Installs that predate this key are old users: no grace for them.
+    final firstLaunch = prefs.getInt(_kFirstLaunchAt);
+    if (firstLaunch != null &&
+        _now().difference(DateTime.fromMillisecondsSinceEpoch(firstLaunch)) <
+            installGrace) {
+      return false;
     }
-
-    final switchCount = prefs.getInt(_kCitySwitchCount) ?? 0;
-    return switchCount >= citySwitchFrequency;
-  }
-
-  Future<void> recordCitySwitch() async {
-    final prefs = await _p;
-    final count = prefs.getInt(_kCitySwitchCount) ?? 0;
-    await prefs.setInt(_kCitySwitchCount, count + 1);
+    if (transitions < frequency) return false;
+    if (_elapsedSince(prefs, _kInterstitialLastShownAt) < minInterval) {
+      return false;
+    }
+    if (_elapsedSince(prefs, _kAppOpenLastShownAt) < afterAppOpen) {
+      return false;
+    }
+    return _shownToday(prefs) < dailyCap;
   }
 
   Future<void> recordInterstitialShown() async {
     final prefs = await _p;
+    // Read before the day key moves, or yesterday's count would carry over.
+    final shownToday = _shownToday(prefs) + 1;
     await prefs.setInt(
       _kInterstitialLastShownAt,
-      DateTime.now().millisecondsSinceEpoch,
+      _now().millisecondsSinceEpoch,
     );
-    await prefs.setInt(_kCitySwitchCount, 0);
+    await prefs.setInt(_kTransitionCount, 0);
+    await prefs.setString(_kInterstitialDay, _today());
+    await prefs.setInt(_kInterstitialDayCount, shownToday);
+  }
+
+  int _shownToday(SharedPreferences prefs) =>
+      prefs.getString(_kInterstitialDay) == _today()
+      ? prefs.getInt(_kInterstitialDayCount) ?? 0
+      : 0;
+
+  String _today() {
+    final now = _now();
+    return '${now.year}-${now.month}-${now.day}';
+  }
+
+  /// "Forever" when the event never happened.
+  Duration _elapsedSince(SharedPreferences prefs, String key) {
+    final at = prefs.getInt(key);
+    if (at == null) return const Duration(days: 365);
+    return _now().difference(DateTime.fromMillisecondsSinceEpoch(at));
   }
 }

@@ -92,8 +92,7 @@ class LocationHintCard extends StatelessWidget {
         actionLabel: switch (access) {
           LocationAccess.servicesOff => l10n.homeLocationAction,
           LocationAccess.deniedForever => l10n.actionOpenSettings,
-          LocationAccess.denied ||
-          LocationAccess.granted => l10n.homeLocationAllowAction,
+          LocationAccess.denied || LocationAccess.granted => l10n.actionAllow,
         },
         onAction: onEnable,
       ),

@@ -1,3 +1,4 @@
+import '../../../../ads/widgets/native_ad_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart' hide MapEvent;
@@ -15,7 +16,7 @@ import '../../../../core/widgets/switch_row.dart';
 import '../../../settings/domain/app_settings.dart';
 import '../../../settings/presentation/bloc/settings_bloc.dart';
 import '../../../settings/presentation/formats_of.dart';
-import '../../../settings/presentation/widgets/notification_denied_listener.dart';
+import '../../../settings/presentation/widgets/notifications_blocked_notice.dart';
 import '../../../weather/domain/entities/forecast.dart';
 import '../../../weather/presentation/bloc/weather_bloc.dart';
 import '../../../weather/presentation/widgets/outlook_card.dart';
@@ -51,46 +52,47 @@ class _RadarViewState extends State<RadarView> {
     final forecast = weather.forecast;
     final placeName = weather.place?.name ?? '';
     return Scaffold(
-      body: NotificationDeniedListener(
-        child: SkyScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: ScreenHeader(
-                title: l10n.radarTitle,
-                subtitle: l10n.radarSubtitle(placeName),
+      body: SkyScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: ScreenHeader(
+              title: l10n.radarTitle,
+              subtitle: l10n.radarSubtitle(placeName),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: OsmonSpace.s16),
+              child: _RadarPanel(
+                controller: _controller,
+                tint: tint,
+                zoom: _radarZoom,
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: OsmonSpace.s16),
-                child: _RadarPanel(
-                  controller: _controller,
-                  tint: tint,
-                  zoom: _radarZoom,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: OsmonSpace.s8),
+              child: Text(
+                l10n.radarModelNote,
+                style: OsmonType.micro.copyWith(
+                  color: OsmonColors.textTertiary,
                 ),
               ),
             ),
+          ),
+          if (forecast != null) ...<Widget>[
+            SliverToBoxAdapter(child: Eyebrow(l10n.radarNext2h)),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: OsmonSpace.s8),
-                child: Text(
-                  l10n.radarModelNote,
-                  style: OsmonType.micro.copyWith(
-                    color: OsmonColors.textTertiary,
-                  ),
-                ),
-              ),
+              child: _NowcastPanel(forecast: forecast, tint: tint),
             ),
-            if (forecast != null) ...<Widget>[
-              SliverToBoxAdapter(child: Eyebrow(l10n.radarNext2h)),
-              SliverToBoxAdapter(
-                child: _NowcastPanel(forecast: forecast, tint: tint),
-              ),
-            ],
-            SliverToBoxAdapter(child: Eyebrow(l10n.radarAlerts)),
-            const SliverToBoxAdapter(child: _AlertSwitches()),
           ],
-        ),
+          SliverToBoxAdapter(child: Eyebrow(l10n.radarAlerts)),
+          const SliverToBoxAdapter(child: _AlertSwitches()),
+          const SliverToBoxAdapter(
+            child: PageEndNativeAd(slotKey: 'radar_end'),
+          ),
+        ],
       ),
     );
   }
@@ -216,9 +218,7 @@ class _AlertSwitches extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final settings = context.select<SettingsBloc, AppSettings>(
-      (bloc) => bloc.state.settings,
-    );
+    final state = context.watch<SettingsBloc>().state;
     void toggle(NotificationKind kind, bool enabled) => context
         .read<SettingsBloc>()
         .add(SettingsNotificationToggled(kind, enabled: enabled));
@@ -228,23 +228,28 @@ class _AlertSwitches extends StatelessWidget {
       (NotificationKind.frost, l10n.radarAlertFrost),
       (NotificationKind.dust, l10n.radarAlertDust),
     ];
-    return GlassPanel(
-      padding: const EdgeInsets.symmetric(
-        horizontal: OsmonSpace.s14,
-        vertical: OsmonSpace.s4,
-      ),
-      child: Column(
-        children: <Widget>[
-          for (var i = 0; i < rows.length; i++) ...<Widget>[
-            if (i > 0) const Divider(height: 1, color: OsmonColors.divider),
-            SwitchRow(
-              title: rows[i].$2,
-              value: settings.isEnabled(rows[i].$1),
-              onChanged: (enabled) => toggle(rows[i].$1, enabled),
-            ),
-          ],
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        const NotificationsBlockedNotice(),
+        GlassPanel(
+          padding: const EdgeInsets.symmetric(
+            horizontal: OsmonSpace.s14,
+            vertical: OsmonSpace.s4,
+          ),
+          child: Column(
+            children: <Widget>[
+              for (var i = 0; i < rows.length; i++) ...<Widget>[
+                if (i > 0) const Divider(height: 1, color: OsmonColors.divider),
+                SwitchRow(
+                  title: rows[i].$2,
+                  value: state.isNotificationOn(rows[i].$1),
+                  onChanged: (enabled) => toggle(rows[i].$1, enabled),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

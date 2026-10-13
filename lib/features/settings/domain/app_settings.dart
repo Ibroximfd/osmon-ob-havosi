@@ -26,10 +26,14 @@ final class AppSettings extends Equatable {
     this.batterySaver = false,
     this.reduceMotion = false,
     this.prayerMethod = PrayerMethod.uzbekistan,
+    // Every kind starts on; the OS permission is what really gates them.
     this.notifications = const <NotificationKind>{
       NotificationKind.dailySummary,
       NotificationKind.rainSoon,
       NotificationKind.severeWeather,
+      NotificationKind.frost,
+      NotificationKind.dust,
+      NotificationKind.prayer,
     },
     this.onboardingDone = false,
   });

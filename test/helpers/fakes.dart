@@ -110,6 +110,9 @@ final class FakePermissions implements NotificationPermissions {
   Future<bool> request() async => granted;
 
   @override
+  Future<bool> isGranted() async => granted;
+
+  @override
   Future<void> openSettings() async {}
 }
 

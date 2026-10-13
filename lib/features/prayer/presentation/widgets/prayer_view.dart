@@ -1,3 +1,4 @@
+import '../../../../ads/widgets/native_ad_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -77,6 +78,10 @@ class PrayerView extends StatelessWidget {
                   ),
                 },
               ),
+              if (state.status == LoadStatus.ready)
+                const SliverToBoxAdapter(
+                  child: PageEndNativeAd(slotKey: 'prayer_end'),
+                ),
             ],
           );
         },

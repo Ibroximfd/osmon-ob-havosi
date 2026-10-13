@@ -17,6 +17,10 @@ import 'package:osmon_uzbekiston_ob_havosi/features/weather/presentation/widgets
 import 'package:osmon_uzbekiston_ob_havosi/features/weather/presentation/widgets/home_skeleton.dart';
 import 'package:osmon_uzbekiston_ob_havosi/features/weather/presentation/widgets/home_view.dart';
 import 'package:osmon_uzbekiston_ob_havosi/l10n/app_localizations.dart';
+import 'package:osmon_uzbekiston_ob_havosi/core/time/tz_time_zone_resolver.dart';
+import 'package:osmon_uzbekiston_ob_havosi/features/prayer/data/adhan_prayer_times_source.dart';
+import 'package:osmon_uzbekiston_ob_havosi/features/prayer/presentation/bloc/prayer_bloc.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
 
 import '../../helpers/fakes.dart';
 import '../../helpers/forecast_fixture.dart';
@@ -70,6 +74,17 @@ Future<_SeededWeatherBloc> _pump(
         BlocProvider<FavoritesBloc>(
           create: (_) => FavoritesBloc(_NoFavorites()),
         ),
+        BlocProvider<PrayerBloc>(
+          create: (_) => PrayerBloc(
+            location: FakeLocationRepository(selected: UzbekCities.tashkent),
+            settings: FakeSettingsRepository(),
+            times: const AdhanPrayerTimesSource(),
+            timeZones: const TzTimeZoneResolver(),
+            // 14:06 in Tashkent: dhuhr has passed, asr is next.
+            clock: () => DateTime.utc(2026, 10, 12, 9, 6),
+            tick: const Duration(days: 1),
+          )..add(const PrayerStarted()),
+        ),
       ],
       child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -86,6 +101,8 @@ Future<_SeededWeatherBloc> _pump(
 }
 
 void main() {
+  setUpAll(tz_data.initializeTimeZones);
+
   testWidgets('loading shows the skeleton', (tester) async {
     await _pump(tester, const WeatherState(status: LoadStatus.loading));
     expect(find.byType(HomeSkeleton), findsOneWidget);
@@ -141,6 +158,22 @@ void main() {
     expect(find.text('23'), findsOneWidget);
     expect(find.byType(OfflineBanner), findsNothing);
     expect(find.byType(LocationHintCard), findsNothing);
+  });
+
+  testWidgets('the next prayer and the road forecast sit near the top', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      WeatherState(
+        status: LoadStatus.ready,
+        place: UzbekCities.tashkent,
+        forecast: buildForecast(),
+      ),
+    );
+    expect(find.text('KEYINGI NAMOZ'), findsOneWidget);
+    expect(find.text('Asr'), findsOneWidget);
+    expect(find.text("YO'L OB-HAVOSI"), findsOneWidget);
   });
 
   testWidgets('refused location asks for it above a working forecast', (

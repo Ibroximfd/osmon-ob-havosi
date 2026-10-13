@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:osmon_uzbekiston_ob_havosi/core/bloc/load_status.dart';
+import 'package:osmon_uzbekiston_ob_havosi/core/domain/geo_point.dart';
 import 'package:osmon_uzbekiston_ob_havosi/core/domain/place.dart';
 import 'package:osmon_uzbekiston_ob_havosi/core/error/data_failure.dart';
 import 'package:osmon_uzbekiston_ob_havosi/features/location/domain/location_repository.dart';
@@ -141,6 +142,72 @@ void main() {
         expect(bloc.state.forecast, forecast);
         expect(bloc.state.locationAccess, LocationAccess.servicesOff);
       },
+    );
+
+    final savedGps = Place(
+      name: UzbekCities.tashkent.name,
+      point: UzbekCities.tashkent.point,
+      isCurrentLocation: true,
+    );
+    final samarkand = UzbekCities.regionalCentres.firstWhere(
+      (place) => place.point.distanceKmTo(UzbekCities.tashkent.point) > 100,
+    );
+
+    blocTest<WeatherBloc, WeatherState>(
+      'a saved GPS place follows the device to another city',
+      build: () => build(
+        weather: FakeWeatherRepository(
+          result: Right<DataFailure, Forecast>(forecast),
+        ),
+        location: FakeLocationRepository(
+          selected: savedGps,
+          locateResult: Right<DataFailure, Place>(samarkand),
+        ),
+      ),
+      act: (bloc) => bloc.add(const WeatherStarted()),
+      verify: (bloc) {
+        expect(bloc.state.place, samarkand);
+        expect(bloc.state.status, LoadStatus.ready);
+      },
+    );
+
+    blocTest<WeatherBloc, WeatherState>(
+      'GPS jitter within the same town keeps the saved place',
+      build: () => build(
+        weather: FakeWeatherRepository(
+          result: Right<DataFailure, Forecast>(forecast),
+        ),
+        location: FakeLocationRepository(
+          selected: savedGps,
+          locateResult: Right<DataFailure, Place>(
+            Place(
+              name: 'Chilonzor',
+              point: GeoPoint(
+                savedGps.point.latitude + 0.01,
+                savedGps.point.longitude,
+              ),
+              isCurrentLocation: true,
+            ),
+          ),
+        ),
+      ),
+      act: (bloc) => bloc.add(const WeatherStarted()),
+      verify: (bloc) => expect(bloc.state.place, savedGps),
+    );
+
+    blocTest<WeatherBloc, WeatherState>(
+      'a city the user chose is never replaced by GPS on start',
+      build: () => build(
+        weather: FakeWeatherRepository(
+          result: Right<DataFailure, Forecast>(forecast),
+        ),
+        location: FakeLocationRepository(
+          selected: UzbekCities.tashkent,
+          locateResult: Right<DataFailure, Place>(samarkand),
+        ),
+      ),
+      act: (bloc) => bloc.add(const WeatherStarted()),
+      verify: (bloc) => expect(bloc.state.place, UzbekCities.tashkent),
     );
 
     final located = UzbekCities.regionalCentres[1];

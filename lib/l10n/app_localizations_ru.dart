@@ -558,9 +558,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeLocationAction => 'Включить';
 
   @override
-  String get homeLocationAllowAction => 'Разрешить';
-
-  @override
   String homeLocationBlockedMessage(String city) {
     return 'Разрешите доступ в настройках телефона. Сейчас показан $city.';
   }
@@ -575,6 +572,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeLocationOffTitle => 'Геолокация выключена';
+
+  @override
+  String get homeRouteHint => 'Прогноз для каждого участка пути';
 
   @override
   String get homeSearchTooltip => 'Найти город';
@@ -799,6 +799,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navSettings => 'Настройки';
 
   @override
+  String get notifBlockedMessage =>
+      'Телефон запрещает приложению уведомления, поэтому предупреждения не приходят.';
+
+  @override
+  String get notifBlockedTitle => 'Уведомления отключены';
+
+  @override
   String notifDailyBody(String min, String max, String chance) {
     return 'Сегодня $min…$max. Вероятность осадков $chance.';
   }
@@ -921,6 +928,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onbLocationDenied => 'Не разрешено — город можно выбрать вручную.';
+
+  @override
+  String get onbLocationServicesOff =>
+      'Геолокация выключена — включите её, и прогноз подстроится под ваше место.';
 
   @override
   String get onbLocationTitle => 'Местоположение';
@@ -1134,9 +1145,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get quickPhoto => 'AI Фото';
-
-  @override
-  String get quickPrayer => 'Время намаза';
 
   @override
   String get quickRoute => 'Погода в дороге';

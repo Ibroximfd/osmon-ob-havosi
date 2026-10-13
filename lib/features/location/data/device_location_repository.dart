@@ -49,9 +49,8 @@ final class DeviceLocationRepository implements LocationRepository {
     required String languageCode,
     bool prompt = true,
   }) async {
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      return const Left<DataFailure, Place>(ServiceDisabledFailure());
-    }
+    // Permission first: the dialog works with location switched off, so a
+    // user who allows it now only has to flip the switch later.
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied && prompt) {
       permission = await Geolocator.requestPermission();
@@ -60,6 +59,9 @@ final class DeviceLocationRepository implements LocationRepository {
         permission == LocationPermission.deniedForever ||
         permission == LocationPermission.unableToDetermine) {
       return const Left<DataFailure, Place>(PermissionFailure());
+    }
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      return const Left<DataFailure, Place>(ServiceDisabledFailure());
     }
     try {
       final position = await Geolocator.getCurrentPosition(

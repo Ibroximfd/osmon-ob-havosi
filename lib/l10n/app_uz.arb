@@ -297,7 +297,6 @@
   },
   "homeLocateAction": "Joylashuvni aniqlash",
   "homeLocationAction": "Yoqish",
-  "homeLocationAllowAction": "Ruxsat berish",
   "homeLocationBlockedMessage": "Telefon sozlamalaridan ruxsat bering. Hozir {city} ko'rsatilmoqda.",
   "@homeLocationBlockedMessage": {
     "placeholders": {
@@ -316,6 +315,7 @@
     }
   },
   "homeLocationOffTitle": "Joylashuv o'chiq",
+  "homeRouteHint": "Yo'lning har bir qismi uchun prognoz",
   "homeSearchTooltip": "Shahar qidirish",
   "indexCarWash": "Mashina yuvish",
   "indexCycling": "Velosiped",
@@ -421,6 +421,8 @@
   "navMap": "Xarita",
   "navRadar": "Radar",
   "navSettings": "Sozlama",
+  "notifBlockedMessage": "Telefon ilovaga bildirishnoma yuborishni taqiqlagan, shuning uchun ogohlantirishlar kelmaydi.",
+  "notifBlockedTitle": "Bildirishnomalar o'chiq",
   "notifDailyBody": "Bugun {min}…{max}. Yog'in ehtimoli {chance}.",
   "@notifDailyBody": {
     "placeholders": {
@@ -541,6 +543,7 @@
   "onbLanguageTitle": "Tilni tanlang",
   "onbLocationBody": "Ob-havoni aynan siz turgan joy uchun ko'rsatamiz.",
   "onbLocationDenied": "Ruxsat berilmadi — shaharni keyin qo'lda tanlaysiz.",
+  "onbLocationServicesOff": "Joylashuv o'chiq — yoqsangiz, ob-havo turgan joyingizga moslashadi.",
   "onbLocationTitle": "Joylashuv",
   "onbNotifBody": "Yomg'ir, momaqaldiroq va sovuqdan oldindan ogohlantiramiz.",
   "onbNotifTitle": "Bildirishnomalar",
@@ -676,7 +679,6 @@
   "quickChat": "AI suhbat",
   "quickField": "Dala rejimi",
   "quickPhoto": "AI Foto",
-  "quickPrayer": "Namoz vaqtlari",
   "quickRoute": "Yo'l ob-havosi",
   "radarAlertDust": "Chang bo'roni",
   "radarAlertFrost": "Tungi sovuq",

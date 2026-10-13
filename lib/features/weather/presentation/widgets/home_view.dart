@@ -18,6 +18,7 @@ import '../../../../core/widgets/state_views.dart';
 import '../../../favorites/presentation/bloc/favorites_bloc.dart';
 import '../../../location/domain/location_repository.dart';
 import '../../../settings/presentation/formats_of.dart';
+import '../../../settings/presentation/widgets/notifications_blocked_notice.dart';
 import '../bloc/weather_bloc.dart';
 import 'daily_list.dart';
 import 'day_detail_sheet.dart';
@@ -31,6 +32,7 @@ import 'life_index_grid.dart';
 import 'metrics_grid.dart';
 import 'outlook_card.dart';
 import 'quick_access_grid.dart';
+import 'today_shortcuts.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -80,9 +82,7 @@ class _HomeContent extends StatelessWidget {
 
   void _open(BuildContext context, QuickDestination destination) =>
       context.push(switch (destination) {
-        QuickDestination.prayer => AppRoutes.prayer,
         QuickDestination.field => AppRoutes.field,
-        QuickDestination.route => AppRoutes.route,
         QuickDestination.alerts => AppRoutes.alerts,
         QuickDestination.photo => AppRoutes.photo,
         QuickDestination.chat => AppRoutes.chat,
@@ -123,6 +123,10 @@ class _HomeContent extends StatelessWidget {
           cityName: place.name,
           onEnable: () => _enableLocation(context, locationAccess),
         ),
+      const Padding(
+        padding: EdgeInsets.only(top: OsmonSpace.s12),
+        child: NotificationsBlockedNotice(),
+      ),
       HeroConditions(forecast: forecast, formats: formats, tint: tint),
       if (lastYear != null) LastYearChip(delta: lastYear, formats: formats),
       const SizedBox(height: OsmonSpace.s16),
@@ -141,6 +145,12 @@ class _HomeContent extends StatelessWidget {
         formats: formats,
         tint: tint,
         onTap: () => context.go(AppRoutes.radar),
+      ),
+      TodayShortcuts(
+        formats: formats,
+        tint: tint,
+        onPrayer: () => context.push(AppRoutes.prayer),
+        onRoute: () => context.push(AppRoutes.route),
       ),
       Eyebrow(l10n.sectionHourly),
       HourlyStrip(hours: forecast.hourly, formats: formats, tint: tint),

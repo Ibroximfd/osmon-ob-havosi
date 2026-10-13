@@ -16,6 +16,7 @@ import 'di/injector.dart';
 import 'firebase/firebase_setup.dart';
 import 'firebase/screen_tracker.dart';
 import 'locale/fallback_localizations.dart';
+import 'router/ad_transition_trigger.dart';
 import 'router/app_router.dart';
 import 'router/app_routes.dart';
 import 'side_effects.dart';
@@ -30,15 +31,18 @@ class OsmonApp extends StatefulWidget {
 class _OsmonAppState extends State<OsmonApp> {
   late final GoRouter _router = createRouter(sl<SettingsRepository>());
   ScreenTracker? _screens;
+  late final AdTransitionTrigger _adTransitions;
 
   @override
   void initState() {
     super.initState();
     if (FirebaseSetup.isReady) _screens = ScreenTracker(_router);
+    _adTransitions = AdTransitionTrigger(_router);
   }
 
   @override
   void dispose() {
+    _adTransitions.dispose();
     _screens?.dispose();
     _router.dispose();
     super.dispose();

@@ -1,3 +1,4 @@
+import '../../../../ads/widgets/native_ad_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -136,6 +137,10 @@ class RouteView extends StatelessWidget {
                   LoadStatus.ready => _PlanView(plan: state.plan!, tint: tint),
                 },
               ),
+              if (state.status == LoadStatus.ready)
+                const SliverToBoxAdapter(
+                  child: PageEndNativeAd(slotKey: 'route_end'),
+                ),
             ],
           );
         },

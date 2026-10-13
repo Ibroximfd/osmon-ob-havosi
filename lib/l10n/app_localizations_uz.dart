@@ -549,9 +549,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeLocationAction => 'Yoqish';
 
   @override
-  String get homeLocationAllowAction => 'Ruxsat berish';
-
-  @override
   String homeLocationBlockedMessage(String city) {
     return 'Telefon sozlamalaridan ruxsat bering. Hozir $city ko\'rsatilmoqda.';
   }
@@ -566,6 +563,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get homeLocationOffTitle => 'Joylashuv o\'chiq';
+
+  @override
+  String get homeRouteHint => 'Yo\'lning har bir qismi uchun prognoz';
 
   @override
   String get homeSearchTooltip => 'Shahar qidirish';
@@ -790,6 +790,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get navSettings => 'Sozlama';
 
   @override
+  String get notifBlockedMessage =>
+      'Telefon ilovaga bildirishnoma yuborishni taqiqlagan, shuning uchun ogohlantirishlar kelmaydi.';
+
+  @override
+  String get notifBlockedTitle => 'Bildirishnomalar o\'chiq';
+
+  @override
   String notifDailyBody(String min, String max, String chance) {
     return 'Bugun $min…$max. Yog\'in ehtimoli $chance.';
   }
@@ -900,6 +907,10 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get onbLocationDenied =>
       'Ruxsat berilmadi — shaharni keyin qo\'lda tanlaysiz.';
+
+  @override
+  String get onbLocationServicesOff =>
+      'Joylashuv o\'chiq — yoqsangiz, ob-havo turgan joyingizga moslashadi.';
 
   @override
   String get onbLocationTitle => 'Joylashuv';
@@ -1103,9 +1114,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get quickPhoto => 'AI Foto';
-
-  @override
-  String get quickPrayer => 'Namoz vaqtlari';
 
   @override
   String get quickRoute => 'Yo\'l ob-havosi';

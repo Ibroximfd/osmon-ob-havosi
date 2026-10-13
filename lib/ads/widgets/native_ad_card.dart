@@ -19,6 +19,20 @@ class NativeAdCard extends StatefulWidget {
   State<NativeAdCard> createState() => _NativeAdCardState();
 }
 
+/// A native ad closing a page: the user has finished reading, so it
+/// interrupts nothing and still gets seen.
+class PageEndNativeAd extends StatelessWidget {
+  const PageEndNativeAd({super.key, required this.slotKey});
+
+  final String slotKey;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: OsmonSpace.s16),
+    child: NativeAdCard(slotKey: slotKey),
+  );
+}
+
 class _NativeAdCardState extends State<NativeAdCard> {
   bool _requested = false;
 

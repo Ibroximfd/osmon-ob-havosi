@@ -89,8 +89,25 @@ class AdConfig {
   static const Duration appOpenMaxCacheDuration = Duration(hours: 4);
 
   // ── Interstitial rules ──────────────────────────────────────────
-  static const Duration interstitialMinInterval = Duration(minutes: 3);
-  static const int interstitialCitySwitchFrequency = 3;
+  // Interstitials only ever appear at a transition (switching city, opening
+  // a feature page), and these caps keep them rare enough that nobody
+  // leaves the app over them.
+  static const Duration interstitialMinInterval = Duration(minutes: 4);
+
+  /// Every n-th transition may show one.
+  static const int interstitialTransitionFrequency = 3;
+  static const int interstitialDailyCap = 4;
+
+  /// Breathing room after an app-open ad.
+  static const Duration interstitialAfterAppOpen = Duration(minutes: 2);
+
+  /// A new install sees no interstitial during its first day.
+  static const Duration interstitialInstallGrace = Duration(hours: 24);
+
+  // ── Native rules ───────────────────────────────────────────────
+  /// A page opened again after this long gets a fresh native ad (AdMob asks
+  /// for at least 60 s between refreshes).
+  static const Duration nativeRefreshAfter = Duration(seconds: 60);
 
   // ── Retry / backoff (shared by App Open, Interstitial, Native, Banner) ──
   static const int maxRetryAttempts = 5;

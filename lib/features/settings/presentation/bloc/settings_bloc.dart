@@ -58,12 +58,27 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       (event, emit) => _permissions.openSettings(),
       transformer: droppable(),
     );
+    on<SettingsNotificationAccessChecked>(
+      (event, emit) async => _applyPermission(
+        emit,
+        await _permissions.isGranted(),
+        reportRefusal: false,
+      ),
+      transformer: droppable(),
+    );
+    on<SettingsNotificationsAllowRequested>(
+      (event, emit) async =>
+          _applyPermission(emit, await _permissions.request()),
+      transformer: droppable(),
+    );
+    on<SettingsMainScreenShown>(_onMainScreenShown, transformer: droppable());
     on<_SettingsChangedElsewhere>(
       (event, emit) => emit(state.copyWith(settings: event.settings)),
     );
     _subscription = _repository.watch().listen(
       (settings) => add(_SettingsChangedElsewhere(settings)),
     );
+    add(const SettingsNotificationAccessChecked());
   }
 
   final SettingsRepository _repository;
@@ -75,17 +90,54 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     await _repository.save(settings);
   }
 
+  /// Granting turns every notification on — the user just agreed to hear
+  /// from the app. A refusal the user made by hand raises the notice whose
+  /// snackbar offers the system settings.
+  Future<void> _applyPermission(
+    Emitter<SettingsState> emit,
+    bool granted, {
+    bool reportRefusal = true,
+  }) async {
+    final newlyGranted = granted && !state.notificationsAllowed;
+    emit(
+      state.copyWith(
+        notificationsAllowed: granted,
+        permissionDeniedNotice: granted || !reportRefusal
+            ? state.permissionDeniedNotice
+            : state.permissionDeniedNotice + 1,
+      ),
+    );
+    if (newlyGranted) {
+      await _save(
+        emit,
+        state.settings.copyWith(notifications: NotificationKind.values.toSet()),
+      );
+    }
+  }
+
+  /// Entering the app asks again while the OS blocks notifications. Android
+  /// shows its dialog until the user refuses twice; after that the request
+  /// returns at once and the home notice points to the system settings.
+  Future<void> _onMainScreenShown(
+    SettingsMainScreenShown event,
+    Emitter<SettingsState> emit,
+  ) async {
+    if (await _permissions.isGranted()) return _applyPermission(emit, true);
+    await _applyPermission(
+      emit,
+      await _permissions.request(),
+      reportRefusal: false,
+    );
+  }
+
   Future<void> _onNotificationToggled(
     SettingsNotificationToggled event,
     Emitter<SettingsState> emit,
   ) async {
-    if (event.enabled && !await _permissions.request()) {
-      emit(
-        state.copyWith(
-          permissionDeniedNotice: state.permissionDeniedNotice + 1,
-        ),
-      );
-      return;
+    if (event.enabled) {
+      final granted = await _permissions.request();
+      await _applyPermission(emit, granted);
+      if (!granted) return;
     }
     final kinds = Set<NotificationKind>.of(state.settings.notifications);
     event.enabled ? kinds.add(event.kind) : kinds.remove(event.kind);

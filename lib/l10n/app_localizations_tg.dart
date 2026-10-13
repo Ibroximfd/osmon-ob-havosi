@@ -545,9 +545,6 @@ class AppLocalizationsTg extends AppLocalizations {
   String get homeLocationAction => 'Фаъол кардан';
 
   @override
-  String get homeLocationAllowAction => 'Иҷозат додан';
-
-  @override
   String homeLocationBlockedMessage(String city) {
     return 'Дар танзимоти телефон иҷозат диҳед. Ҳоло $city нишон дода мешавад.';
   }
@@ -562,6 +559,9 @@ class AppLocalizationsTg extends AppLocalizations {
 
   @override
   String get homeLocationOffTitle => 'Ҷойгиршавӣ хомӯш';
+
+  @override
+  String get homeRouteHint => 'Пешгӯӣ барои ҳар қисми роҳ';
 
   @override
   String get homeSearchTooltip => 'Ҷустуҷӯи шаҳр';
@@ -786,6 +786,13 @@ class AppLocalizationsTg extends AppLocalizations {
   String get navSettings => 'Танзимот';
 
   @override
+  String get notifBlockedMessage =>
+      'Телефон ба барнома огоҳинома фиристоданро манъ кардааст, бинобар ин огоҳиҳо намеоянд.';
+
+  @override
+  String get notifBlockedTitle => 'Огоҳиномаҳо хомӯш';
+
+  @override
   String notifDailyBody(String min, String max, String chance) {
     return 'Имрӯз $min…$max. Эҳтимоли боришот $chance.';
   }
@@ -896,6 +903,10 @@ class AppLocalizationsTg extends AppLocalizations {
   @override
   String get onbLocationDenied =>
       'Иҷозат нест — шаҳрро баъдтар дастӣ интихоб мекунед.';
+
+  @override
+  String get onbLocationServicesOff =>
+      'Ҷойгиршавӣ хомӯш аст — фаъол кунед, пешгӯӣ ба ҷои шумо мувофиқ мешавад.';
 
   @override
   String get onbLocationTitle => 'Ҷойгиршавӣ';
@@ -1098,9 +1109,6 @@ class AppLocalizationsTg extends AppLocalizations {
 
   @override
   String get quickPhoto => 'AI Акс';
-
-  @override
-  String get quickPrayer => 'Вақти намоз';
 
   @override
   String get quickRoute => 'Обу ҳаво дар роҳ';

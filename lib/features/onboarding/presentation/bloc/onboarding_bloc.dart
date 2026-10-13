@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/data_failure.dart';
 import '../../../location/domain/location_repository.dart';
+import '../../../settings/domain/app_settings.dart';
 import '../../../settings/domain/notification_permissions.dart';
 import '../../../settings/domain/settings_repository.dart';
 import '../../domain/language_detection.dart';
@@ -93,6 +94,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async {
     emit(state.copyWith(isRequesting: true));
     final granted = await _notifications.request();
+    if (granted) {
+      // Saying yes here means every kind of notification, all switched on.
+      await _settings.save(
+        _settings.current.copyWith(
+          notifications: NotificationKind.values.toSet(),
+        ),
+      );
+    }
     emit(state.copyWith(isRequesting: false, notificationsGranted: granted));
   }
 

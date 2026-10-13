@@ -1,3 +1,4 @@
+import '../../../../ads/widgets/native_ad_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -104,6 +105,10 @@ class FieldView extends StatelessWidget {
                   LoadStatus.ready => _FieldContent(state: state, tint: tint),
                 },
               ),
+              if (state.status == LoadStatus.ready)
+                const SliverToBoxAdapter(
+                  child: PageEndNativeAd(slotKey: 'field_end'),
+                ),
             ],
           );
         },

@@ -141,13 +141,31 @@ void main() {
       final seeds = StoreSeeds(language);
       final outDir = Directory('store/play/$language')
         ..createSync(recursive: true);
+      final screensDir = Directory('build/promo/screens/$language')
+        ..createSync(recursive: true);
       tester.view.physicalSize = _canvas * _pixelRatio;
       tester.view.devicePixelRatio = _pixelRatio;
       addTearDown(tester.view.reset);
 
       final weather = SeededWeatherBloc(seeds.home());
       final screens = <(String, SkyScene, SkyScene, int, Widget)>[
-        ('01_nowcast', SkyScene.rain, SkyScene.rain, 0, const HomeView()),
+        (
+          '01_nowcast',
+          SkyScene.rain,
+          SkyScene.rain,
+          0,
+          BlocProvider<PrayerBloc>(
+            create: (_) => PrayerBloc(
+              location: FakeLocationRepository(selected: seeds.tashkent),
+              settings: FakeSettingsRepository(),
+              times: const AdhanPrayerTimesSource(),
+              timeZones: const TzTimeZoneResolver(),
+              clock: () => DateTime.utc(2026, 10, 12, 9, 6),
+              tick: const Duration(days: 1),
+            )..add(const PrayerStarted()),
+            child: const HomeView(),
+          ),
+        ),
         (
           '02_prayer',
           SkyScene.twilight,
@@ -211,6 +229,7 @@ void main() {
         final (file, frameScene, phoneScene, tab, screen) = screens[i];
         final (headline, subline) = _copy[language]![i];
         final key = GlobalKey();
+        final phoneKey = GlobalKey();
         await tester.pumpWidget(
           _App(
             language: language,
@@ -221,7 +240,16 @@ void main() {
                 headline: headline,
                 subline: subline,
                 scene: frameScene,
-                phone: _PhoneScreen(scene: phoneScene, tab: tab, child: screen),
+                // Its own boundary: the bare screen is also saved full-size
+                // for the promo video (tool/promo).
+                phone: RepaintBoundary(
+                  key: phoneKey,
+                  child: _PhoneScreen(
+                    scene: phoneScene,
+                    tab: tab,
+                    child: screen,
+                  ),
+                ),
               ),
             ),
           ),
@@ -229,6 +257,7 @@ void main() {
         await tester.pump(const Duration(seconds: 2));
         await tester.pump(const Duration(milliseconds: 100));
         await _capture(tester, key, '${outDir.path}/$file.png');
+        await _capture(tester, phoneKey, '${screensDir.path}/$file.png');
         await tester.pumpWidget(const SizedBox.shrink());
         await tester.pump(const Duration(seconds: 1));
       }

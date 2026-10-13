@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Release builds shrink resources. The notification icon is referenced by
-     name from Dart only, so R8 would strip it and every notification call
-     would fail ("invalid_icon"). -->
+<!-- Release builds shrink resources. The notification icon and chime are
+     referenced by name from Dart only, so R8 would strip them and every
+     notification call would fail ("invalid_icon" / silent channel). -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_stat_osmon" />
+    tools:keep="@drawable/ic_stat_osmon,@raw/osmon_chime" />

@@ -57,6 +57,10 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   late final StreamSubscription<Place> _placeSubscription;
   Place? _selecting;
 
+  /// Below this the device is still "here": a new fix only shifts the
+  /// coordinates within the same town.
+  static const double _movedKm = 3;
+
   String get _language => _settings.current.languageCode ?? 'uz';
 
   Future<void> _onLoad(
@@ -82,11 +86,30 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   Future<void> _start(Emitter<WeatherState> emit) async {
     final selected = _location.selectedPlace;
     if (selected != null) {
-      emit(state.copyWith(locationAccess: await _location.checkAccess()));
+      final access = await _location.checkAccess();
+      emit(state.copyWith(locationAccess: access));
       await _load(selected, emit);
+      if (selected.isCurrentLocation && access == LocationAccess.granted) {
+        await _followDevice(selected, emit);
+      }
       return;
     }
     await _locate(emit, prompt: false);
+  }
+
+  /// A saved GPS place goes stale when the user travels. It is shown first,
+  /// then the device is located quietly and the app switches only on a real
+  /// move, not on GPS jitter.
+  Future<void> _followDevice(Place saved, Emitter<WeatherState> emit) async {
+    final result = await _location.locateDevice(
+      languageCode: _language,
+      prompt: false,
+    );
+    final here = result.fold((_) => null, (place) => place);
+    if (here == null || emit.isDone) return;
+    if (here.point.distanceKmTo(saved.point) < _movedKm) return;
+    await _select(here);
+    await _load(here, emit);
   }
 
   /// Picks up access granted (or revoked) in the system settings. The

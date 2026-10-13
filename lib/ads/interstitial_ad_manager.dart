@@ -70,23 +70,24 @@ class InterstitialAdManager {
     _retryTimer = Timer(delay, loadAd);
   }
 
-  /// Call from the city-switch flow (search_page.dart). Fire-and-forget —
-  /// silently no-ops if any frequency/coordination rule blocks the show.
-  Future<void> maybeShowOnCitySwitch() async {
+  /// Call at a natural transition — switching city, opening a feature
+  /// page. Fire-and-forget: silently no-ops whenever a frequency rule (see
+  /// [AdConfig]) or another full-screen ad blocks the show.
+  Future<void> maybeShowOnTransition() async {
     try {
-      await AdSessionStore.instance.recordCitySwitch();
-
       if (AdsState.isFullScreenAdShowing) return;
+      final allowed = await AdSessionStore.instance.recordTransitionAndCheck(
+        minInterval: AdConfig.interstitialMinInterval,
+        frequency: AdConfig.interstitialTransitionFrequency,
+        dailyCap: AdConfig.interstitialDailyCap,
+        afterAppOpen: AdConfig.interstitialAfterAppOpen,
+        installGrace: AdConfig.interstitialInstallGrace,
+      );
       if (!isAdAvailable) {
         loadAd();
         return;
       }
-      if (!await AdSessionStore.instance.canShowInterstitial(
-        minInterval: AdConfig.interstitialMinInterval,
-        citySwitchFrequency: AdConfig.interstitialCitySwitchFrequency,
-      )) {
-        return;
-      }
+      if (!allowed) return;
 
       final ad = _ad!;
       ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -109,7 +110,7 @@ class InterstitialAdManager {
       );
       await ad.show();
     } catch (e) {
-      debugPrint('InterstitialAdManager: maybeShowOnCitySwitch threw: $e');
+      debugPrint('InterstitialAdManager: maybeShowOnTransition threw: $e');
       AdsState.isFullScreenAdShowing = false;
     }
   }

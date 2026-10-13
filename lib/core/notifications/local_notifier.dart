@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart'
@@ -8,14 +10,17 @@ import '../../features/settings/domain/notification_permissions.dart';
 import '../platform/external_flow.dart';
 import '../theme/osmon_colors.dart';
 
+/// Android freezes a channel's sound and vibration once it exists on a
+/// phone, so the Osmon chime lives in `_v2` channels and the 2.0.x ones are
+/// removed (see [legacyIds]).
 enum NotificationChannel {
-  daily('osmon_daily', 'Daily forecast', Importance.defaultImportance),
-  alerts('osmon_alerts', 'Weather alerts', Importance.high),
-  prayer('osmon_prayer', 'Prayer times', Importance.low),
+  daily('osmon_daily_v2', 'Daily forecast', Importance.defaultImportance),
+  alerts('osmon_alerts_v2', 'Weather alerts', Importance.high),
+  prayer('osmon_prayer_v2', 'Prayer times', Importance.defaultImportance),
 
   /// Announcements pushed from the Firebase console; also the channel the
   /// manifest names for system-shown pushes.
-  news('osmon_news', 'News', Importance.high);
+  news('osmon_news_v2', 'News', Importance.high);
 
   const NotificationChannel(this.id, this.title, this.importance);
 
@@ -24,6 +29,13 @@ enum NotificationChannel {
   /// System-settings label; Android shows it as written.
   final String title;
   final Importance importance;
+
+  static const List<String> legacyIds = <String>[
+    'osmon_daily',
+    'osmon_alerts',
+    'osmon_prayer',
+    'osmon_news',
+  ];
 }
 
 /// Thin wrapper over flutter_local_notifications. Scheduling takes UTC
@@ -34,6 +46,19 @@ final class LocalNotifier implements NotificationPermissions {
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _ready = false;
+
+  /// The app's own soft two-note chime (res/raw/osmon_chime.wav, generated
+  /// by tool/sound/make_chime.py), so users know it is Osmon.
+  static const AndroidNotificationSound _chime =
+      RawResourceAndroidNotificationSound('osmon_chime');
+
+  /// Two short, gentle pulses: noticeable in a pocket, never startling.
+  static final Int64List _vibration = Int64List.fromList(<int>[
+    0,
+    160,
+    110,
+    160,
+  ]);
 
   Future<void> initialize() async {
     if (_ready) return;
@@ -47,7 +72,32 @@ final class LocalNotifier implements NotificationPermissions {
         ),
       ),
     );
+    await _prepareChannels();
     _ready = true;
+  }
+
+  /// Creates every channel up front, so pushes the system shows (FCM, or a
+  /// schedule firing before the app ran) already ring with the chime.
+  Future<void> _prepareChannels() async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return;
+    for (final id in NotificationChannel.legacyIds) {
+      await android.deleteNotificationChannel(id);
+    }
+    for (final channel in NotificationChannel.values) {
+      await android.createNotificationChannel(
+        AndroidNotificationChannel(
+          channel.id,
+          channel.title,
+          importance: channel.importance,
+          sound: _chime,
+          vibrationPattern: _vibration,
+        ),
+      );
+    }
   }
 
   /// A refusal and a platform error read the same to the caller: the toggle
@@ -57,6 +107,28 @@ final class LocalNotifier implements NotificationPermissions {
   Future<bool> request() async {
     try {
       return await _requestFromPlatform();
+    } on PlatformException {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> isGranted() async {
+    try {
+      await initialize();
+      final android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      if (android != null) {
+        return await android.areNotificationsEnabled() ?? false;
+      }
+      final ios = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      final options = await ios?.checkPermissions();
+      return options?.isEnabled ?? false;
     } on PlatformException {
       return false;
     }
@@ -86,23 +158,6 @@ final class LocalNotifier implements NotificationPermissions {
       return await ios.requestPermissions(alert: true, sound: true) ?? false;
     }
     return false;
-  }
-
-  /// Channels are otherwise created on first use; a push shown by the
-  /// system before that would land in a generic "Miscellaneous" channel.
-  Future<void> ensureChannel(NotificationChannel channel) async {
-    await initialize();
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(
-          AndroidNotificationChannel(
-            channel.id,
-            channel.title,
-            importance: channel.importance,
-          ),
-        );
   }
 
   Future<void> show({
@@ -154,12 +209,11 @@ final class LocalNotifier implements NotificationPermissions {
       priority: channel.importance == Importance.high
           ? Priority.high
           : Priority.defaultPriority,
-      playSound: channel != NotificationChannel.prayer,
+      sound: _chime,
+      vibrationPattern: _vibration,
       styleInformation: BigTextStyleInformation(body),
       color: OsmonColors.accent,
     ),
-    iOS: DarwinNotificationDetails(
-      presentSound: channel != NotificationChannel.prayer,
-    ),
+    iOS: const DarwinNotificationDetails(presentSound: true),
   );
 }

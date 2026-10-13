@@ -546,9 +546,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get homeLocationAction => 'Қосу';
 
   @override
-  String get homeLocationAllowAction => 'Рұқсат беру';
-
-  @override
   String homeLocationBlockedMessage(String city) {
     return 'Телефон баптауларынан рұқсат беріңіз. Қазір $city көрсетілуде.';
   }
@@ -563,6 +560,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get homeLocationOffTitle => 'Геолокация өшірулі';
+
+  @override
+  String get homeRouteHint => 'Жолдың әр бөлігіне болжам';
 
   @override
   String get homeSearchTooltip => 'Қала іздеу';
@@ -787,6 +787,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get navSettings => 'Баптау';
 
   @override
+  String get notifBlockedMessage =>
+      'Телефон қолданбаға хабарландыруға тыйым салған, сондықтан ескертулер келмейді.';
+
+  @override
+  String get notifBlockedTitle => 'Хабарландырулар өшірулі';
+
+  @override
   String notifDailyBody(String min, String max, String chance) {
     return 'Бүгін $min…$max. Жауын ықтималдығы $chance.';
   }
@@ -895,6 +902,10 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get onbLocationDenied => 'Рұқсат жоқ — қаланы кейін қолмен таңдайсыз.';
+
+  @override
+  String get onbLocationServicesOff =>
+      'Геолокация өшірулі — қоссаңыз, болжам тұрған жеріңізге бейімделеді.';
 
   @override
   String get onbLocationTitle => 'Орналасу';
@@ -1097,9 +1108,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get quickPhoto => 'AI Фото';
-
-  @override
-  String get quickPrayer => 'Намаз уақыты';
 
   @override
   String get quickRoute => 'Жолдағы ауа райы';

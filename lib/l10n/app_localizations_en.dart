@@ -555,9 +555,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeLocationAction => 'Turn on';
 
   @override
-  String get homeLocationAllowAction => 'Allow';
-
-  @override
   String homeLocationBlockedMessage(String city) {
     return 'Allow access in phone settings. Showing $city for now.';
   }
@@ -572,6 +569,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeLocationOffTitle => 'Location is off';
+
+  @override
+  String get homeRouteHint => 'A forecast for every stretch of road';
 
   @override
   String get homeSearchTooltip => 'Find a city';
@@ -796,6 +796,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSettings => 'Settings';
 
   @override
+  String get notifBlockedMessage =>
+      'Your phone blocks notifications from the app, so alerts won\'t arrive.';
+
+  @override
+  String get notifBlockedTitle => 'Notifications are off';
+
+  @override
   String notifDailyBody(String min, String max, String chance) {
     return 'Today $min…$max. Chance of precipitation $chance.';
   }
@@ -917,6 +924,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onbLocationDenied =>
       'Not allowed — you can pick a city by hand later.';
+
+  @override
+  String get onbLocationServicesOff =>
+      'Location is off — turn it on and the forecast will follow you.';
 
   @override
   String get onbLocationTitle => 'Location';
@@ -1129,9 +1140,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickPhoto => 'AI Photo';
-
-  @override
-  String get quickPrayer => 'Prayer times';
 
   @override
   String get quickRoute => 'Road weather';

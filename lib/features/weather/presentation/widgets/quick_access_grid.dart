@@ -8,7 +8,8 @@ import '../../../../core/theme/osmon_typography.dart';
 import '../../../../core/widgets/glass_panel.dart';
 import '../../../../core/widgets/metric_tile.dart';
 
-enum QuickDestination { prayer, field, route, alerts, photo, chat }
+/// Prayer and route have their own tiles at the top of home.
+enum QuickDestination { field, alerts, photo, chat }
 
 class QuickAccessGrid extends StatelessWidget {
   const QuickAccessGrid({super.key, required this.tint, required this.onOpen});
@@ -20,9 +21,7 @@ class QuickAccessGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final items = <(QuickDestination, IconData, String)>[
-      (QuickDestination.prayer, LucideIcons.moon, l10n.quickPrayer),
       (QuickDestination.field, LucideIcons.wheat, l10n.quickField),
-      (QuickDestination.route, LucideIcons.milestone, l10n.quickRoute),
       (QuickDestination.alerts, LucideIcons.alertTriangle, l10n.quickAlerts),
       (QuickDestination.photo, LucideIcons.camera, l10n.quickPhoto),
       (QuickDestination.chat, LucideIcons.messageCircle, l10n.quickChat),

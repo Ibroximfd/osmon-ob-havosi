@@ -21,7 +21,7 @@ import '../../../../core/widgets/switch_row.dart';
 import '../../domain/app_settings.dart';
 import '../bloc/settings_bloc.dart';
 import '../language_names.dart';
-import 'notification_denied_listener.dart';
+import 'notifications_blocked_notice.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -30,42 +30,38 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Scaffold(
-      body: NotificationDeniedListener(
-        child: BlocBuilder<SettingsBloc, SettingsState>(
-          builder: (context, state) {
-            final settings = state.settings;
-            final bloc = context.read<SettingsBloc>();
-            return SkyScrollView(
-              slivers: <Widget>[
-                SliverToBoxAdapter(
-                  child: ScreenHeader(title: l10n.settingsTitle),
+      body: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, state) {
+          final settings = state.settings;
+          final bloc = context.read<SettingsBloc>();
+          return SkyScrollView(
+            slivers: <Widget>[
+              SliverToBoxAdapter(
+                child: ScreenHeader(title: l10n.settingsTitle),
+              ),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsLanguage)),
+              SliverToBoxAdapter(
+                child: _LanguageList(
+                  selected: settings.languageCode ?? 'uz',
+                  onSelected: (code) =>
+                      bloc.add(SettingsLanguageSelected(code)),
                 ),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsLanguage)),
-                SliverToBoxAdapter(
-                  child: _LanguageList(
-                    selected: settings.languageCode ?? 'uz',
-                    onSelected: (code) =>
-                        bloc.add(SettingsLanguageSelected(code)),
-                  ),
-                ),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsUnits)),
-                SliverToBoxAdapter(child: _UnitsCard(settings: settings)),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsAppearance)),
-                SliverToBoxAdapter(child: _AppearanceCard(settings: settings)),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsNotifications)),
-                SliverToBoxAdapter(
-                  child: _NotificationsCard(settings: settings),
-                ),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsPrayerMethod)),
-                SliverToBoxAdapter(
-                  child: _PrayerMethodCard(selected: settings.prayerMethod),
-                ),
-                SliverToBoxAdapter(child: Eyebrow(l10n.settingsAbout)),
-                const SliverToBoxAdapter(child: _AboutCard()),
-              ],
-            );
-          },
-        ),
+              ),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsUnits)),
+              SliverToBoxAdapter(child: _UnitsCard(settings: settings)),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsAppearance)),
+              SliverToBoxAdapter(child: _AppearanceCard(settings: settings)),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsNotifications)),
+              SliverToBoxAdapter(child: _NotificationsCard(state: state)),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsPrayerMethod)),
+              SliverToBoxAdapter(
+                child: _PrayerMethodCard(selected: settings.prayerMethod),
+              ),
+              SliverToBoxAdapter(child: Eyebrow(l10n.settingsAbout)),
+              const SliverToBoxAdapter(child: _AboutCard()),
+            ],
+          );
+        },
       ),
     );
   }
@@ -265,9 +261,9 @@ class _AppearanceCard extends StatelessWidget {
 }
 
 class _NotificationsCard extends StatelessWidget {
-  const _NotificationsCard({required this.settings});
+  const _NotificationsCard({required this.state});
 
-  final AppSettings settings;
+  final SettingsState state;
 
   @override
   Widget build(BuildContext context) {
@@ -280,25 +276,30 @@ class _NotificationsCard extends StatelessWidget {
       (NotificationKind.dust, l10n.radarAlertDust),
       (NotificationKind.prayer, l10n.notifKindPrayer),
     ];
-    return GlassPanel(
-      padding: const EdgeInsets.symmetric(
-        horizontal: OsmonSpace.s14,
-        vertical: OsmonSpace.s4,
-      ),
-      child: Column(
-        children: <Widget>[
-          for (var i = 0; i < rows.length; i++) ...<Widget>[
-            if (i > 0) const Divider(height: 1, color: OsmonColors.divider),
-            SwitchRow(
-              title: rows[i].$2,
-              value: settings.isEnabled(rows[i].$1),
-              onChanged: (on) => context.read<SettingsBloc>().add(
-                SettingsNotificationToggled(rows[i].$1, enabled: on),
-              ),
-            ),
-          ],
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        const NotificationsBlockedNotice(),
+        GlassPanel(
+          padding: const EdgeInsets.symmetric(
+            horizontal: OsmonSpace.s14,
+            vertical: OsmonSpace.s4,
+          ),
+          child: Column(
+            children: <Widget>[
+              for (var i = 0; i < rows.length; i++) ...<Widget>[
+                if (i > 0) const Divider(height: 1, color: OsmonColors.divider),
+                SwitchRow(
+                  title: rows[i].$2,
+                  value: state.isNotificationOn(rows[i].$1),
+                  onChanged: (on) => context.read<SettingsBloc>().add(
+                    SettingsNotificationToggled(rows[i].$1, enabled: on),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

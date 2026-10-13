@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/error/data_failure.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/osmon_colors.dart';
 import '../../../../core/theme/osmon_motion.dart';
@@ -220,9 +221,11 @@ class _PermissionsStep extends StatelessWidget {
             _PermissionCard(
               icon: LucideIcons.navigation,
               title: l10n.onbLocationTitle,
-              body: state.locationFailure != null
-                  ? l10n.onbLocationDenied
-                  : l10n.onbLocationBody,
+              body: switch (state.locationFailure) {
+                null => l10n.onbLocationBody,
+                ServiceDisabledFailure() => l10n.onbLocationServicesOff,
+                _ => l10n.onbLocationDenied,
+              },
               granted: state.locationGranted,
               busy: state.isRequesting,
               onAllow: () => bloc.add(const OnboardingLocationRequested()),

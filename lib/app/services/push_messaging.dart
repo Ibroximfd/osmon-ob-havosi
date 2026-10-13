@@ -21,7 +21,8 @@ final class PushMessaging {
   static String languageTopic(String code) => 'lang_$code';
 
   Future<void> start(String languageCode) async {
-    await _notifier.ensureChannel(NotificationChannel.news);
+    // Creates the news channel the manifest names for system-shown pushes.
+    await _notifier.initialize();
     _foreground ??= FirebaseMessaging.onMessage.listen(_showInApp);
     await _bestEffort(FirebaseMessaging.instance.subscribeToTopic(allTopic));
     await syncLanguage(languageCode);

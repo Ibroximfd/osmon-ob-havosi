@@ -6,9 +6,10 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
 
-    <!-- image_picker permissions -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    
+    <!-- No CAMERA permission: image_picker opens the system camera app, which
+         needs none. Declaring it without asking at runtime makes Android
+         refuse that camera intent. -->
+
     <!-- geolocator permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -32,7 +33,7 @@
             android:resource="@drawable/ic_stat_osmon"/>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="osmon_news"/>
+            android:value="osmon_news_v2"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

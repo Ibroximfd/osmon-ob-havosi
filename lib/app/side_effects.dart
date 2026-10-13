@@ -31,8 +31,12 @@ class _AppSideEffectsState extends State<AppSideEffects> {
   void initState() {
     super.initState();
     _lifecycle = AppLifecycleListener(
-      onResume: () =>
-          context.read<WeatherBloc>().add(const WeatherAppResumed()),
+      onResume: () {
+        context.read<WeatherBloc>().add(const WeatherAppResumed());
+        context.read<SettingsBloc>().add(
+          const SettingsNotificationAccessChecked(),
+        );
+      },
     );
   }
 

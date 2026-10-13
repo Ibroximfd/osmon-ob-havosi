@@ -4,7 +4,7 @@ description: "Osmon - O'zbekiston ob-havo ilovasi"
 publish_to: 'none'
 
 # The previous release was 2.0.1+6; the line was dropped in the last commit.
-version: 2.0.4+11
+version: 2.0.5+12
 
 environment:
   sdk: ^3.10.8

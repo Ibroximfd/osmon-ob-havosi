@@ -1084,12 +1084,6 @@ abstract class AppLocalizations {
   /// **'Yoqish'**
   String get homeLocationAction;
 
-  /// No description provided for @homeLocationAllowAction.
-  ///
-  /// In uz, this message translates to:
-  /// **'Ruxsat berish'**
-  String get homeLocationAllowAction;
-
   /// No description provided for @homeLocationBlockedMessage.
   ///
   /// In uz, this message translates to:
@@ -1113,6 +1107,12 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Joylashuv o\'chiq'**
   String get homeLocationOffTitle;
+
+  /// No description provided for @homeRouteHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'lning har bir qismi uchun prognoz'**
+  String get homeRouteHint;
 
   /// No description provided for @homeSearchTooltip.
   ///
@@ -1540,6 +1540,18 @@ abstract class AppLocalizations {
   /// **'Sozlama'**
   String get navSettings;
 
+  /// No description provided for @notifBlockedMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon ilovaga bildirishnoma yuborishni taqiqlagan, shuning uchun ogohlantirishlar kelmaydi.'**
+  String get notifBlockedMessage;
+
+  /// No description provided for @notifBlockedTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bildirishnomalar o\'chiq'**
+  String get notifBlockedTitle;
+
   /// No description provided for @notifDailyBody.
   ///
   /// In uz, this message translates to:
@@ -1707,6 +1719,12 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Ruxsat berilmadi — shaharni keyin qo\'lda tanlaysiz.'**
   String get onbLocationDenied;
+
+  /// No description provided for @onbLocationServicesOff.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuv o\'chiq — yoqsangiz, ob-havo turgan joyingizga moslashadi.'**
+  String get onbLocationServicesOff;
 
   /// No description provided for @onbLocationTitle.
   ///
@@ -2061,12 +2079,6 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'AI Foto'**
   String get quickPhoto;
-
-  /// No description provided for @quickPrayer.
-  ///
-  /// In uz, this message translates to:
-  /// **'Namoz vaqtlari'**
-  String get quickPrayer;
 
   /// No description provided for @quickRoute.
   ///

@@ -46,7 +46,7 @@ class _SearchViewState extends State<SearchView> {
     context.read<WeatherBloc>().add(WeatherPlaceSelected(place));
     context.pop();
     // A natural pause point for an interstitial; frequency-capped inside.
-    InterstitialAdManager.instance.maybeShowOnCitySwitch();
+    InterstitialAdManager.instance.maybeShowOnTransition();
   }
 
   void _useLocation() {

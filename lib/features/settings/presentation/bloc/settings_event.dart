@@ -89,6 +89,23 @@ final class SettingsNotificationToggled extends SettingsEvent {
   List<Object?> get props => <Object?>[kind, enabled];
 }
 
+/// The app started or came back to the foreground; the user may have
+/// changed the notification permission in the system settings meanwhile.
+final class SettingsNotificationAccessChecked extends SettingsEvent {
+  const SettingsNotificationAccessChecked();
+}
+
+/// The main screen opened (after onboarding, or on any later launch).
+final class SettingsMainScreenShown extends SettingsEvent {
+  const SettingsMainScreenShown();
+}
+
+/// The user tapped "allow" on the notice shown while the OS blocks
+/// notifications.
+final class SettingsNotificationsAllowRequested extends SettingsEvent {
+  const SettingsNotificationsAllowRequested();
+}
+
 /// The user chose to fix a refused notification permission in the system
 /// settings.
 final class SettingsNotificationSettingsOpened extends SettingsEvent {

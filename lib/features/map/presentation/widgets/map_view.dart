@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart' hide MapEvent;
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../ads/widgets/top_banner_ad.dart';
 import '../../../../core/bloc/load_status.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/sky/sky_palette.dart';
@@ -58,39 +59,56 @@ class _MapViewState extends State<MapView> {
     );
     final padding = MediaQuery.paddingOf(context);
     return Scaffold(
-      body: Stack(
+      backgroundColor: OsmonColors.ink,
+      // The banner has its own strip above the map, so it never covers the
+      // map or sits where a pan or a tap on the controls would land on it.
+      body: Column(
         children: <Widget>[
-          // Panels above repaint on their own (timeline, chips) without
-          // forcing the map to repaint with them, and vice versa.
-          Positioned.fill(
-            child: RepaintBoundary(
-              child: OsmonMap(controller: _controller, tint: tint),
-            ),
-          ),
-          Positioned(
-            top: padding.top + OsmonSpace.s8,
-            left: 0,
-            right: 0,
-            child: _TopBar(tint: tint),
-          ),
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: OsmonSpace.gutter),
-                child: MapZoomControls(
-                  onZoomIn: () => _zoomBy(1),
-                  onZoomOut: () => _zoomBy(-1),
-                  onRecenter: () => _recenter(context.read<MapBloc>().state),
-                ),
+          const TopBannerAd(),
+          Expanded(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: Stack(
+                children: <Widget>[
+                  // Panels above repaint on their own (timeline, chips) without
+                  // forcing the map to repaint with them, and vice versa.
+                  Positioned.fill(
+                    child: RepaintBoundary(
+                      child: OsmonMap(controller: _controller, tint: tint),
+                    ),
+                  ),
+                  Positioned(
+                    top: OsmonSpace.s12,
+                    left: 0,
+                    right: 0,
+                    child: _TopBar(tint: tint),
+                  ),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: OsmonSpace.gutter,
+                        ),
+                        child: MapZoomControls(
+                          onZoomIn: () => _zoomBy(1),
+                          onZoomOut: () => _zoomBy(-1),
+                          onRecenter: () =>
+                              _recenter(context.read<MapBloc>().state),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: OsmonSpace.gutter,
+                    right: OsmonSpace.gutter,
+                    bottom: OsmonSize.navBarClearance + padding.bottom,
+                    child: _BottomPanel(tint: tint),
+                  ),
+                ],
               ),
             ),
-          ),
-          Positioned(
-            left: OsmonSpace.gutter,
-            right: OsmonSpace.gutter,
-            bottom: OsmonSize.navBarClearance + padding.bottom,
-            child: _BottomPanel(tint: tint),
           ),
         ],
       ),
